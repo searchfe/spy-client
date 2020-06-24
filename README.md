@@ -1,4 +1,4 @@
-# spy-client
+# spy-client [![Build Status](https://travis-ci.com/kaivean/spy-client.svg?branch=master)](https://travis-ci.com/kaivean/spy-client)
 
 ## 介绍
 日志采集模块，提供一系列方便的api供使用

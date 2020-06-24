@@ -3,6 +3,8 @@
  * @author kaivean
  */
 
+import webpack from 'webpack';
+
 export default (config: any) => {
     config.set({
 
@@ -63,6 +65,11 @@ export default (config: any) => {
             resolve: {
                 extensions: ['.ts', '.js'],
             },
+            plugins: [
+                new webpack.DefinePlugin({
+                    'process.env.TRAVIS': process.env.TRAVIS
+                })
+            ],
             module: {
                 // Ignored files should not have calls to import, require, define or any other importing mechanism.
                 // This can boost build performance when ignoring large libraries.
@@ -138,6 +145,14 @@ export default (config: any) => {
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: ['Chrome'],
 
+        // you can define custom flags
+        customLaunchers: {
+            ChromeHeadlessNoSandbox: {
+                base: 'ChromeHeadless',
+                flags: ['--no-sandbox']
+            }
+        },
+
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: true,
@@ -146,4 +161,10 @@ export default (config: any) => {
         // how many browser should be started simultaneous
         concurrency: Infinity,
     });
+
+    if (process.env.TRAVIS) {
+        config.set({
+            browsers: ['ChromeHeadless', 'ChromeHeadlessNoSandbox'],
+        });
+    }
 };
