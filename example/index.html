@@ -1,0 +1,328 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPY Client Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script>
+    // 配置
+    window.__spyclientCconf = {
+        pid: '1_1000',
+        lid: '',
+        logServer: 'https://sp1.baidu.com/5b1ZeDe5KgQFm2e88IuM_a/mwb2.gif',
+
+        // 数据类型：异常，触发时间：OnLoadResourceError
+        resourceError: {
+            group: 'resource',
+            sample: 1,
+            handler: function (data) {
+
+            }
+        },
+        // 数据类型：异常，触发时间：OnJSError
+        jsError: {
+            group: 'js',
+            sample: 1,
+            handler: function (data) {
+
+            }
+        },
+        // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
+        whiteScreenError: {
+            sample: 1,
+            group: 'whiteScreen',
+            selector: 'body',
+            subSelector: 'button1',
+            timeout: 2000,
+            handler: function (data) {
+
+            }
+        }
+    };
+    </script>
+    <script src="/dist/spy-head.js"></script>
+</head>
+<body>
+    <!-- <div style="height: 667px;"> -->
+    <div id="main">
+        <div>open devtool</div>
+
+        <button type="button" onclick="gettiming()" style="width:300px;">点此更新performance timing</button>
+        <pre id="text"></pre>
+        <p>
+            TypeScriptJavaScriptJavaScript 的超集用于解决大型项目的代码复杂性一种脚本语言，用于创建动态网页。可以在编译期间发现并纠正错误作为一种解释型语言，只能在运行时发现错误强类型，支持静态和动态类型弱类型，没有静态类型选项最终被编译成 JavaScript 代码，使浏览器可以理解可以直接在浏览器中使用支持模块、泛型和接口不支持模块，泛型或接口支持 ES3，ES4，ES5 和 ES6 等不支持编译其他 ES3，ES4，ES5 或 ES6 功能社区的支持仍在增长，而且还不是很大大量的社区支持以及大量文档和解决问题的支持
+        </p>
+        <img src="https://t7.baidu.com/it/u=1211001202,1148572269&fm=193&app=53&size=w414&n=0&g=0n&f=jpeg?sec=1594890084&t=cde9e5bcd0b06de0c989741a7853bd06&a=1" alt="">
+        <img src="https://expertimg.cdn.bcebos.com/expertcms/med/zhongyao.jpg" alt="">
+        <script>window.perfFirstScreen = performance.now();</script>
+    </div>
+    <script src="https://mss0.bdstatic.com/se/static/js/iphone/zbios/zbiosT_f69.js"></script>
+    <script src="/dist/spy-client.js"></script>
+
+<script type="text/javascript">
+var spy = new window.SpyClient({
+    pid: '1_1000', // 必须
+    lid: '', // 可选，页面的logid
+    sample: 1 // 全局抽样，取值：[0-1], 所有发送接口都受到该抽样，单个发送接口的sample配置会覆盖该抽样。
+});
+
+// 如果你还有一段代码执行耗时，那么
+var startTime = Date.now();
+document.body.style.border = '2px solid red';
+document.body.getBoundingClientRect();
+var layoutTime = Date.now() - startTime;
+
+spy.sendPerf({
+    // 可选, 分组，默认common，用户自定义
+    group: 'test',
+    // 必须, 指标信息，每个字段为一个指标，由用户自定义
+    info: {
+        fisrtScreen: Math.round(window.perfFirstScreen), // 需要你自行计算好时间再发送，不能带单位
+        layout: layoutTime
+    },
+    // 可选，维度信息，每个字段为一个维度，由用户自定义
+    dim: {
+        os: 'ios',
+        netType: 'wifi'
+    }
+});
+
+spy.sendExcept({
+    // 可选, 分组，默认common，用户自定义
+    group: 'test',
+    // 必须, 异常信息，msg字段是必须的，是异常唯一标识。其他字段作为补充信息，由用户自定义
+    info: {
+        msg: 'fail to play video',
+        module: 'videoDetaiPage'
+    },
+    // 可选，维度信息，每个字段为一个维度，由用户自定义
+    dim: {
+        os: 'ios',
+        netType: 'wifi'
+    }
+});
+
+spy.sendDist({
+    // 可选, 分组，默认common，用户自定义
+    group: 'test',
+    // 必须, 指标信息，每个字段为一个指标，由用户自定义
+    info: {
+        isLogin: 'yes'
+    },
+    // 可选，维度信息，每个字段为一个维度，由用户自定义
+    dim: {
+        os: 'ios',
+        netType: 'wifi'
+    }
+});
+
+spy.sendCount({
+    // 可选, 分组，默认common，用户自定义
+    group: 'test',
+    // 必须, 指标信息，每个字段为一个指标，由用户自定义
+    info: {
+        buttonClick: 1
+    },
+    // 可选，维度信息，每个字段为一个维度，由用户自定义
+    dim: {
+        os: 'ios',
+        netType: 'wifi'
+    }
+});
+
+try {
+    throw new Error('test');
+}
+catch (e) {
+    spy.sendExceptForError(e, {
+        // 可选, 分组，默认common，用户自定义
+        group: 'test',
+        // 可选，这里的info只需要补充其他用户自定义信息，因为msg、stack等错误信息字段，接口会自动获取
+        info: {
+            from: 'home'
+        },
+        // 可选,维度信息
+        dim: {
+            os: 'ios',
+            netType: 'wifi'
+        }
+    });
+}
+
+
+setTimeout(function () {
+    var obj = {};
+    obj.runError();
+});
+
+// var domain = 'https://sp1.baidu.com/5b1ZeDe5KgQFm2e88IuM_a/mwb2.gif?';
+
+// // 构造url的query部分
+// var query = [
+//     'pid=1_1000', // 必须
+//     'lid=xxxx', // 可选，页面的logid
+//     'ts=' + Date.now(), // 必须，页面的logid
+//     'type=perf', // 必须，perf 说明是性能日志， except异常日志等
+//     'group=test', // 可选，group分组默认是common
+//     // 必须，性能指标采集
+//     'info=' + encodeURIComponent(
+//         JSON.stringify({
+//             fisrtScreen: 800, // 需要你自行计算好时间再发送，不能带单位
+//             whiteScreen: 500
+//         })
+//     ),
+//     // 可选，发送自己的维度
+//     'dim=' + encodeURIComponent(
+//         JSON.stringify({
+//             netType: 'wifi',
+//             pageType: 'car'
+//         })
+//     )
+// ].join('&');
+
+// var url = domain + query;
+
+// // 目前服务器端支持sendBeacon的post请求，可以优先采用，该api可以降低打点丢失率
+// if (!(navigator.sendBeacon && navigator.sendBeacon(url))) {
+//     (new Image()).src = url;
+// }
+
+spy.startMark('playTime');
+// ... // 执行花费1s
+var time = spy.endMark('playTime');
+console.log(time); // output: 1000
+
+spy.startMark('pauseTime');
+
+// ... // 执行花费1s
+
+spy.endMark('pauseTime');
+console.log(spy.getAllMark());
+// output
+// {
+//     playTime: 1000,
+//     pauseTime: 1000
+// }
+
+
+// 类型：性能，触发时间：500MsAfterOnLoad，说明：performance timing的数据采集基本指标
+spy.listenTiming(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 类型：性能，触发时间：500MsAfterOnLoad
+spy.listenLCP(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 类型：性能，触发时间：500MsAfterOnLoad
+spy.listenFID(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 数据类型：性能，触发时间：500MsAfterOnLoad
+spy.listenLayoutShift(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 数据类型：性能，触发时间：500MsAfterOnLoad
+spy.listenTTI(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+
+// 数据类型：性能，触发时间：500MsAfterOnLoad
+spy.listenResource(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 数据类型：异常，触发时间：500MsAfterOnLoad
+spy.listenBigImg(function (info) {
+    console.log('info', info);
+});
+
+// 数据类型：异常，触发时间：500MsAfterOnLoad
+spy.listenHttpResource(function (info) {
+    console.log('info', info);
+});
+
+// 数据类型：性能，触发时间：OnLoad
+spy.listenFSPLongTask(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 产出longtask
+var n = 0;
+for (var i = 0; i < 10000000; i++) {
+    n = n + i + i / 3 * 2;
+}
+
+// 数据类型：性能，触发时间：500MsAfterOnLoad
+spy.listenLCPLongTask(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 数据类型：性能，触发时间：OnLoad
+spy.listenLoadLongTask(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 数据类型：性能，触发时间：OnLeavingPageFirstly
+spy.listenPageLongTask(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+// 数据类型：性能，触发时间：OnLeavingPageFirstly
+spy.listenMemory(function (metric) {
+    spy.sendPerf({
+        info: metric
+    });
+});
+
+var navigatorInfo = spy.getNavigatorInfo();
+console.log(navigatorInfo);
+
+
+function gettiming() {
+    document.getElementById('text').innerHTML = JSON.stringify(performance.timing, null, 4);
+}
+
+// 动态插入图片，模拟layoutShift
+const img2 = document.createElement('img');
+img2.src = 'https://t7.baidu.com/it/u=3748430357,3395801118&fm=193&app=53&size=w414&n=0&g=0n&f=jpeg?sec=1594890084&t=4004954b76645ad405242a68e6f77599';
+document.body.prepend(img2);
+
+
+window.onload = function () {
+    // 模拟页面隐藏，触发 listenMemory 和  listenPageLongTask
+    setTimeout(function () {
+        // gettiming();
+        Object.defineProperty(document, 'visibilityState', {value: 'hidden', writable: true});
+        Object.defineProperty(document, 'hidden', {value: true, writable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+
+    }, 2000);
+};
+</script>
+</body>
+</html>
