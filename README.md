@@ -208,6 +208,7 @@ spyHead.init({
     lid: '', // 业务的log id，可选
 
     // 数据类型：异常，触发时间：监听的window.addEventListen('error')有资源加载失败时
+    // 上报信息里包含资源的标签名，资源地址，xpath
     // 用不着的话，需要删掉这个配置
     resourceError: {
         // 发送的分组名称，可以自定义
@@ -222,6 +223,7 @@ spyHead.init({
         }
     },
     // 数据类型：异常，触发时间：监听的全局报错window.addEventListen('error')，有未被捕获的全局异常抛出时
+    // 上报信息里包含错误message，stack，之前已发生的所有错误等
     // 用不着的话，需要删掉这个配置
     jsError: {
         // 发送的分组名称，可以自定义
@@ -236,6 +238,7 @@ spyHead.init({
         }
     },
     // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
+    // 上报信息里包含之前已发生的所有错误、dns、tcp、请求响应时间（可能为负，说明该过程没有完成）、设备信息等
     // 用不着的话，需要删掉这个配置
     whiteScreenError: {
         // 抽样，禁用可以设置为0
