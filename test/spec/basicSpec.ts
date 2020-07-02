@@ -12,9 +12,23 @@ async function checkSend(option: any, triggerCb: (spy: any) => void, finishCb?: 
     });
 
     await new Promise(resolve => {
+
+        function recover() {
+            // 恢复
+            (navigator.sendBeacon as any).and.callThrough();
+            // 监听src属性的变化
+            const constructor = (new Image()).constructor.prototype;
+            Object.defineProperty(constructor, 'src', {
+                set(value) {
+                    this.setAttribute('src', value);
+                },
+            });
+        }
+
         // 超过2s没有发出就是有问题了
         const timer = setTimeout(() => {
             expect('timeout > 2000').toBe('failure');
+            recover();
             resolve();
         }, 2000);
 
@@ -32,6 +46,7 @@ async function checkSend(option: any, triggerCb: (spy: any) => void, finishCb?: 
             if (finishCb) {
                 finishCb(spy);
             }
+            recover();
             resolve();
         }
 

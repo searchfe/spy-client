@@ -55,8 +55,8 @@ describe('metric', async () => {
     //         });
 
     //         spy.listenFID(metric => {
-    //             expect(typeof metric.fid === 'number').toBe(true);
-    //             expect(metric.fid > 0).toBe(true);
+    //             expect(typeof metric.fid).toBe('number');
+    //             expect(metric.fid).toBeGreaterThan(0);
     //         });
 
     //         (document.querySelector('button') as HTMLButtonElement).click();
@@ -75,18 +75,18 @@ describe('metric', async () => {
             });
             spy.listenTiming(metric => {
                 console.log('listenTiming', metric)
-                expect(typeof metric.load === 'number').toBe(true);
-                expect(metric.load > 0).toBe(true);
-                expect(typeof metric.domReady === 'number').toBe(true);
-                expect(metric.domReady > 0).toBe(true);
-                expect(typeof metric.parseHtml === 'number').toBe(true);
-                expect(metric.parseHtml > 0).toBe(true);
-                expect(typeof metric.response === 'number').toBe(true);
-                expect(metric.response >= 0).toBe(true);
-                expect(typeof metric.request === 'number').toBe(true);
-                expect(metric.request >= 0).toBe(true);
-                expect(typeof metric.tcp === 'number').toBe(true);
-                expect(typeof metric.dns === 'number').toBe(true);
+                expect(typeof metric.load).toBe('number');
+                expect(metric.load).toBeGreaterThan(0);
+                expect(typeof metric.domReady).toBe('number');
+                expect(metric.domReady).toBeGreaterThan(0);
+                expect(typeof metric.parseHtml).toBe('number');
+                expect(metric.parseHtml).toBeGreaterThan(0);
+                expect(typeof metric.response).toBe('number');
+                expect(metric.response).toBeGreaterThanOrEqual(0);
+                expect(typeof metric.request).toBe('number');
+                expect(metric.request).toBeGreaterThanOrEqual(0);
+                expect(typeof metric.tcp).toBe('number');
+                expect(typeof metric.dns).toBe('number');
 
                 resolve()
             });
@@ -101,8 +101,8 @@ describe('metric', async () => {
                 lid: 'xx',
             });
             spy.listenTTI(metric => {
-                expect(typeof metric.tti === 'number').toBe(true);
-                expect(metric.tti > 0).toBe(true);
+                expect(typeof metric.tti).toBe('number');
+                expect(metric.tti).toBeGreaterThan(0);
                 resolve();
             });
         });
@@ -116,17 +116,17 @@ describe('metric', async () => {
             });
             spy.listenResource(metric => {
                 console.log('listenResource', metric)
-                expect(typeof metric.allSize === 'number').toBe(true);
-                expect(metric.allSize > 0).toBe(true);
-                expect(typeof metric.allTransferSize === 'number').toBe(true);
-                expect(metric.allTransferSize > 0).toBe(true);
-                expect(typeof metric.docSize === 'number').toBe(true);
-                expect(metric.docSize > 0).toBe(true);
-                expect(typeof metric.jsSize === 'number').toBe(true);
-                expect(metric.jsSize > 0).toBe(true);
-                expect(typeof metric.cssSize === 'number').toBe(true);
-                expect(typeof metric.imgSize === 'number').toBe(true);
-                expect(typeof metric.headerSize === 'number').toBe(true);
+                expect(typeof metric.allSize).toBe('number');
+                expect(metric.allSize).toBeGreaterThan(0);
+                expect(typeof metric.allTransferSize).toBe('number');
+                expect(metric.allTransferSize).toBeGreaterThan(0);
+                expect(typeof metric.docSize).toBe('number');
+                expect(metric.docSize).toBeGreaterThan(0);
+                expect(typeof metric.jsSize).toBe('number');
+                expect(metric.jsSize).toBeGreaterThan(0);
+                expect(typeof metric.cssSize).toBe('number');
+                expect(typeof metric.imgSize).toBe('number');
+                expect(typeof metric.headerSize).toBe('number');
 
                 resolve()
             });
@@ -158,15 +158,15 @@ describe('metric', async () => {
             });
             spy.listenFSPLongTask(metric => {
                 console.log('listenFSPLongTask', metric)
-                expect(typeof metric.fspLongtaskTime === 'number').toBe(true);
-                expect(metric.fspLongtaskTime >= 0).toBe(true);
+                expect(typeof metric.fspLongtaskTime).toBe('number');
+                expect(metric.fspLongtaskTime).toBeGreaterThanOrEqual(0);
 
-                expect(typeof metric.fspTBT === 'number').toBe(true);
-                expect(metric.fspTBT >= 0).toBe(true);
+                expect(typeof metric.fspTBT).toBe('number');
+                expect(metric.fspTBT).toBeGreaterThanOrEqual(0);
 
-                expect(typeof metric.fspLongtaskRate === 'number').toBe(true);
-                expect(metric.fspLongtaskRate <= 100).toBe(true);
-                expect(metric.fspLongtaskRate >= 0).toBe(true);
+                expect(typeof metric.fspLongtaskRate).toBe('number');
+                expect(metric.fspLongtaskRate).toBeLessThanOrEqual(100);
+                expect(metric.fspLongtaskRate).toBeGreaterThanOrEqual(0);
 
                 resolve();
             });
@@ -180,15 +180,15 @@ describe('metric', async () => {
                 lid: 'xx',
             });
             spy.listenLCPLongTask(metric => {
-                expect(typeof metric.lcpLongtaskTime === 'number').toBe(true);
-                expect(metric.lcpLongtaskTime > 0).toBe(true);
+                expect(typeof metric.lcpLongtaskTime).toBe('number');
+                expect(metric.lcpLongtaskTime).toBeGreaterThan(0);
 
-                expect(typeof metric.lcpTBT === 'number').toBe(true);
-                expect(metric.lcpTBT > 0).toBe(true);
+                expect(typeof metric.lcpTBT).toBe('number');
+                expect(metric.lcpTBT).toBeGreaterThan(0);
 
-                expect(typeof metric.lcpLongtaskRate === 'number').toBe(true);
-                expect(metric.lcpLongtaskRate <= 100).toBe(true);
-                expect(metric.lcpLongtaskRate >= 0).toBe(true);
+                expect(typeof metric.lcpLongtaskRate).toBe('number');
+                expect(metric.lcpLongtaskRate).toBeLessThanOrEqual(100);
+                expect(metric.lcpLongtaskRate).toBeGreaterThanOrEqual(0);
 
                 resolve();
             });
@@ -202,15 +202,15 @@ describe('metric', async () => {
                 lid: 'xx',
             });
             spy.listenLoadLongTask(metric => {
-                expect(typeof metric.loadLongtaskTime === 'number').toBe(true);
-                expect(metric.loadLongtaskTime > 0).toBe(true);
+                expect(typeof metric.loadLongtaskTime).toBe('number');
+                expect(metric.loadLongtaskTime).toBeGreaterThan(0);
 
-                expect(typeof metric.loadTBT === 'number').toBe(true);
-                expect(metric.loadTBT > 0).toBe(true);
+                expect(typeof metric.loadTBT).toBe('number');
+                expect(metric.loadTBT).toBeGreaterThan(0);
 
-                expect(typeof metric.loadLongtaskRate === 'number').toBe(true);
-                expect(metric.loadLongtaskRate <= 100).toBe(true);
-                expect(metric.loadLongtaskRate >= 0).toBe(true);
+                expect(typeof metric.loadLongtaskRate).toBe('number');
+                expect(metric.loadLongtaskRate).toBeLessThanOrEqual(100);
+                expect(metric.loadLongtaskRate).toBeGreaterThanOrEqual(0);
 
                 resolve();
             });
@@ -226,8 +226,8 @@ describe('metric', async () => {
             });
             spy.listenLCP(metric => {
                 console.log('listenLCP', metric)
-                expect(typeof metric.lcp === 'number').toBe(true);
-                expect(metric.lcp > 0).toBe(true);
+                expect(typeof metric.lcp).toBe('number');
+                expect(metric.lcp).toBeGreaterThan(0);
 
                 resolve();
             });
@@ -244,15 +244,15 @@ describe('metric', async () => {
         pros.push(new Promise((resolve, reject) => {
             spy.listenPageLongTask(metric => {
                 console.log('listenPageLongTask', metric)
-                expect(typeof metric.pageLongtaskTime === 'number').toBe(true);
-                expect(metric.pageLongtaskTime > 0).toBe(true);
+                expect(typeof metric.pageLongtaskTime).toBe('number');
+                expect(metric.pageLongtaskTime).toBeGreaterThan(0);
 
-                expect(typeof metric.pageTBT === 'number').toBe(true);
-                expect(metric.pageTBT > 0).toBe(true);
+                expect(typeof metric.pageTBT).toBe('number');
+                expect(metric.pageTBT).toBeGreaterThan(0);
 
-                expect(typeof metric.pageLongtaskRate === 'number').toBe(true);
-                expect(metric.pageLongtaskRate <= 100).toBe(true);
-                expect(metric.pageLongtaskRate >= 0).toBe(true);
+                expect(typeof metric.pageLongtaskRate).toBe('number');
+                expect(metric.pageLongtaskRate).toBeLessThanOrEqual(100);
+                expect(metric.pageLongtaskRate).toBeGreaterThanOrEqual(0);
 
                 resolve();
             });
@@ -261,12 +261,12 @@ describe('metric', async () => {
         pros.push(new Promise((resolve, reject) => {
             spy.listenMemory(metric => {
                 console.log('listenMemory', metric)
-                expect(typeof metric.usedJSHeapSize === 'number').toBe(true);
-                expect(metric.usedJSHeapSize > 0).toBe(true);
+                expect(typeof metric.usedJSHeapSize).toBe('number');
+                expect(metric.usedJSHeapSize).toBeGreaterThan(0);
 
-                expect(typeof metric.usedJSHeapRate === 'number').toBe(true);
-                expect(metric.usedJSHeapRate <= 100).toBe(true);
-                expect(metric.usedJSHeapRate >= 0).toBe(true);
+                expect(typeof metric.usedJSHeapRate).toBe('number');
+                expect(metric.usedJSHeapRate).toBeLessThanOrEqual(100);
+                expect(metric.usedJSHeapRate).toBeGreaterThanOrEqual(0);
 
                 resolve();
             });
@@ -275,8 +275,8 @@ describe('metric', async () => {
         pros.push(new Promise((resolve, reject) => {
             spy.listenLayoutShift(metric => {
                 console.log('listenLayoutShift', metric)
-                expect(typeof metric.layoutShift === 'number').toBe(true);
-                expect(metric.layoutShift >= 0).toBe(true);
+                expect(typeof metric.layoutShift).toBe('number');
+                expect(metric.layoutShift).toBeGreaterThanOrEqual(0);
 
                 resolve();
             });

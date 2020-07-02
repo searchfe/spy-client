@@ -5,7 +5,7 @@
 
 import {Module, FIDCB} from '../lib/interface';
 
-const spyclient = (window as any).__spyclient;
+const spyclient = (window as any).__spyHead;
 const entryType = 'first-input';
 
 export default class FID implements Module {

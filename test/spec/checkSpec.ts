@@ -12,9 +12,15 @@ async function checkConsoleLog(option: any, triggerCb: (spy: any) => void, finis
     });
 
     await new Promise(resolve => {
+        function recover() {
+            // 恢复
+            (console.error as any).and.callThrough();
+        }
+
         // 超过2s没有发出就是有问题了
         const timer = setTimeout(() => {
             expect('timeout > 2000').toBe('failure');
+            recover();
             resolve();
         }, 2000);
 
@@ -23,6 +29,7 @@ async function checkConsoleLog(option: any, triggerCb: (spy: any) => void, finis
             if (finishCb) {
                 finishCb(spy, msg);
             }
+            recover();
             resolve();
             return true;
         });

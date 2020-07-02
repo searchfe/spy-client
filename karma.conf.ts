@@ -23,7 +23,6 @@ export default (config: any) => {
 
         // list of files / patterns to load in the browser
         files: [
-            'test/head-conf.js', // 先加载
             'dist/spy-head.js', // 先加载
             // 'src/index.ts',
             // 'test/**/basicSpec.ts',
@@ -155,7 +154,7 @@ export default (config: any) => {
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: true,
+        singleRun: false,
 
         // Concurrency level
         // how many browser should be started simultaneous

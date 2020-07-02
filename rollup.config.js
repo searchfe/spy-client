@@ -222,8 +222,8 @@ export default [
         input: 'src/spy-head.ts',
         output: {
             file: 'dist/spy-head.js',
-            format: 'iife',
-            name: '__spyclient',
+            format: 'umd',
+            name: '__spyHead',
         },
         plugins: genPlugins({head: true}),
     },
@@ -231,8 +231,8 @@ export default [
         input: 'src/spy-head.ts',
         output: {
             file: 'dist/spy-head.min.js',
-            format: 'iife',
-            name: '__spyclient',
+            format: 'umd',
+            name: '__spyHead',
         },
         plugins: genPlugins({isMin: true, head: true}),
     },

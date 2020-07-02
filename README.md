@@ -30,7 +30,7 @@ CDN方式
 > 如果对于一些指标想理解更准确，看源码是最佳方式 [SDK源码](https://github.com/kaivean/spy-client)
 
 
-> SDK的指标采集请酌情选用，不要一股脑全用上，如果只用了一项采集功能，但SDK体积太大，可以考虑自行编译，可文档最后
+> SDK的指标采集请酌情选用，不要一股脑全用上，如果只用了一项采集功能，但SDK体积太大，可以考虑自行编译，看文档最后
 
 
 ## 快速使用
@@ -184,21 +184,28 @@ spy.clearAllMark(); // 清除所有mark的信息
 
 增强版SDK分成了2部分
 
-1. 头部spy-head：有些功能我们希望越早生效越好，比如JS、资源加载、白屏等错误。因此把这些功能最小集抽成一个单独JS，以便可以插入head标签内，也不会全量引入整个SDK在头部。
-2. 主体spy-client：此部分提供了丰富的性能和异常的指标统计，一些功能依赖于head部分。
+1. spy-head：有些功能我们希望越早生效越好，比如全局JS报错监控。因此把这些功能最小集抽成一个单独JS，以便可以插入head标签内，也不会全量引入整个SDK在头部。当然，放到任何地方都是可以，开发者自行决策即可。此部分包含的功能有
+    * 异常：全局JS报错监控、资源加载失败监控、白屏异常监控
+    * 性能：Longtask等信息采集，真正的统计是在spy-client里，只是越早采集，能获取更多的longtask
 
-### spy-head
+2. spy-client：此部分提供了丰富的性能和异常的指标统计，其中部分功能依赖于spy-head，包含的功能有
+    * 性能指标采集：包含体积、卡顿、速度等60+个性能指标采集方法
+    * 异常：包含大于100K的大图片采集、HTTPS环境下HTTP资源采集
+    * 辅助方式： mark系列辅助方法
+
+### spy-head使用
 
 首先进行必要配置，这段JS可以视情况script内联或嵌入其他JS里，但一定要先于head js
 
 目前spy-head里支持 全局JS报错上报，资源加载失败上报，以及根据一定规则的白屏错误上报
 
-> 如果要启用一下错误监控功能，需要设置其抽样sample不为0
+> 如果要启用一项异常监控功能，需要设置其抽样sample不为0
 
 ```html
 <script>
-// head spy-client，用于异常统计 和 部分性能指标初始采集（所以部分性能指标依赖头部JS）
-window.__spyclientConf = {
+// spy-head js可以视情况script内联或外链，外链地址可见文档开头的CDN
+const spyHead = require('spy-client/dist/spy-head');
+spyHead.init({
     pid: '1_1', // spy申请的pid
     lid: '', // 业务的log id，可选
 
@@ -249,16 +256,11 @@ window.__spyclientConf = {
 
         }
     }
-};
+});
 <script>
 ```
 
-然后引入 spy-head js , 这个JS可以视情况script内联或外链，外链地址可见文档开头的CDN
-```javascript
-require('spy-client/dist/spy-head');
-```
-
-> 像Vue等组件框架会对组件代码做try catch，然后打印到console，这种错误情况是不会有全局错误的，即window.onerror不会触发。只能使用框架的类似error回调去拿到错误，自行调用spy.sendExcept统计。
+> 像Vue等组件框架会对组件代码做try catch，然后打印到console，这种错误情况是不会有全局错误的，即window.onerror不会触发。只能使用框架的全局error回调（比如Vue.config.errorHandler）去拿到错误信息，再调用spy.sendExcept上报。
 > 所以在发现上述jsError全局异常监听失效时，请先自行调试是否能通过window.addEventListen('error')监听到
 
 ### 主体SDK spy-client
@@ -709,6 +711,10 @@ export interface NavigatorInfoMetric {
     hardwareConcurrency?: number;
 }
 ```
+
+## Example
+
+一些样例参考源码 [Example](https://github.com/kaivean/spy-client/blob/master/example/index.html)
 
 
 ## 自定义构建

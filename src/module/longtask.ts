@@ -18,7 +18,7 @@ export interface LongtaskData {
     iframeLongtasks?: {[propName: string]: number[] | undefined};
 }
 
-const spyclient = window.__spyclient;
+const spyclient = window.__spyHead;
 const entryType = 'longtask';
 
 export default class Longtask implements Module {

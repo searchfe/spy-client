@@ -4,43 +4,41 @@
     <title>SPY Client Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script>
-    // 配置
-    window.__spyclientCconf = {
-        pid: '1_1000',
-        lid: '',
-        logServer: 'https://sp1.baidu.com/5b1ZeDe5KgQFm2e88IuM_a/mwb2.gif',
-
-        // 数据类型：异常，触发时间：OnLoadResourceError
-        resourceError: {
-            group: 'resource',
-            sample: 1,
-            handler: function (data) {
-
-            }
-        },
-        // 数据类型：异常，触发时间：OnJSError
-        jsError: {
-            group: 'js',
-            sample: 1,
-            handler: function (data) {
-
-            }
-        },
-        // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
-        whiteScreenError: {
-            sample: 1,
-            group: 'whiteScreen',
-            selector: 'body',
-            subSelector: 'button1',
-            timeout: 2000,
-            handler: function (data) {
-
-            }
-        }
-    };
-    </script>
     <script src="/dist/spy-head.js"></script>
+    <script>
+        // 配置
+        window.__spyHead && window.__spyHead.init({
+            pid: '1_1000',
+            lid: '',
+            // 数据类型：异常，触发时间：OnLoadResourceError
+            resourceError: {
+                group: 'resource',
+                sample: 1,
+                handler: function (data) {
+
+                }
+            },
+            // 数据类型：异常，触发时间：OnJSError
+            jsError: {
+                group: 'js',
+                sample: 1,
+                handler: function (data) {
+
+                }
+            },
+            // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
+            whiteScreenError: {
+                sample: 1,
+                group: 'whiteScreen',
+                selector: 'body',
+                subSelector: 'button1',
+                timeout: 2000,
+                handler: function (data) {
+
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- <div style="height: 667px;"> -->

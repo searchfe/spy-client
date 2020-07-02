@@ -4,30 +4,8 @@
  */
 
 interface Window {
-    __spyclient: any;
-    __spyclientConf: {
-        pid: string;
-        lid: string;
-        logServer: string;
-        resourceError: {
-            group: string;
-            sample: number;
-            handler: (data: any) => boolean;
-        };
-        jsError: {
-            group: string;
-            sample: number;
-            handler: (data: any) => boolean;
-        };
-        whiteScreenError: {
-            group: string;
-            sample: number;
-            selector: string;
-            subSelector: string;
-            timeout: number;
-            handler: (data: any) => boolean;
-        };
-    };
+    __spyHead: any;
+    __spyclientConf: any;
     PerformanceObserver: any;
     requestIdleCallback: (callback: Function, options?: any) => void;
 }

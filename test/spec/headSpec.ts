@@ -5,13 +5,60 @@
 
 import SpyClient from '../../dist/spy-client';
 
+window.__spyHead.init({
+    pid: '1_1000',
+    lid: 'xx',
+    logServer: 'https://sp1.baidu.com/5b1ZeDe5KgQFm2e88IuM_a/mwb2.gif',
+
+    // 数据类型：异常，触发时间：OnLoadResourceError
+    resourceError: {
+        group: 'resource',
+        sample: 1,
+        handler: function (data: any) {
+            data.dim.os = 'ios';
+        }
+    },
+    // 数据类型：异常，触发时间：OnJSError
+    jsError: {
+        group: 'js',
+        sample: 1,
+        handler: function (data: any) {
+            data.dim = {os: 'ios'};
+        }
+    },
+    // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
+    whiteScreenError: {
+        sample: 1,
+        group: 'whiteScreen',
+        selector: 'body',
+        subSelector: '#keyelement',
+        timeout: 3000,
+        handler: function(data: any) {
+            data.dim = {os: 'ios'};
+        }
+    }
+});
 
 async function checkSend(option: any, triggerCb: () => void, finishCb?: (urlObj: URL) => void) {
     option.timeout = option.timeout || 2000;
     await new Promise(resolve => {
+
+        function recover() {
+            // 恢复
+            (navigator.sendBeacon as any).and.callThrough();
+            // 监听src属性的变化
+            const constructor = (new Image()).constructor.prototype;
+            Object.defineProperty(constructor, 'src', {
+                set(value) {
+                    this.setAttribute('src', value);
+                },
+            });
+        }
+
         // 超过2s没有发出就是有问题了
         const timer = setTimeout(() => {
             expect('timeout > ' + option.timeout).toBe('failure');
+            recover();
             resolve();
         }, option.timeout);
 
@@ -27,6 +74,7 @@ async function checkSend(option: any, triggerCb: () => void, finishCb?: (urlObj:
             if (finishCb) {
                 finishCb(urlObj);
             }
+            recover();
             resolve();
         }
 
@@ -68,12 +116,12 @@ async function checkSend(option: any, triggerCb: () => void, finishCb?: (urlObj:
 
 
 describe('spy-head', async () => {
-    let spy: any;
     beforeEach(async () => {
-        spy = new SpyClient({
-            pid: '1_1000',
-            lid: 'xx'
-        });
+
+    });
+
+    afterEach(async () => {
+
     });
 
     // 无法模拟全局JS报错，会被判断错误，导致测试失败

@@ -6,7 +6,7 @@
 import {Module, LayoutShiftCB} from '../lib/interface';
 
 
-const spyclient = (window as any).__spyclient;
+const spyclient = (window as any).__spyHead;
 const entryType = 'layout-shift';
 
 export default class LayoutShift implements Module {

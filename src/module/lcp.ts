@@ -6,7 +6,7 @@
 import {Module, LCPCB} from '../lib/interface';
 import {setData} from '../lib/data';
 
-const spyclient = (window as any).__spyclient;
+const spyclient = (window as any).__spyHead;
 const entryType = 'largest-contentful-paint';
 
 export default class LCP implements Module {
