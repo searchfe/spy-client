@@ -3,13 +3,12 @@
  * @author kaivean
  */
 
-
-import spyHead from './base';
 import {
     ErrorHandlerData,
     SpyHeadConf,
-    ErrorConf
+    ErrorConf,
 } from '../lib/spyHeadInterface';
+import spyHead from './base';
 
 export function init(conf: SpyHeadConf) {
     const resourceError = conf.resourceError || {} as ErrorConf;
@@ -63,7 +62,7 @@ export function init(conf: SpyHeadConf) {
                 if (info.msg.indexOf('MODULE_TIMEOUT') !== -1) {
                     const matches = info.msg.match(/^.*Hang:(.*); Miss:(.*)/);
                     if (matches && matches[2]) {
-                        info.msg = 'MODULE_TIMEOUT for miss:' + (matches[2] as string);
+                        info.msg = 'MODULE_TIMEOUT for miss:' + (matches[2]);
                     }
                 }
 

@@ -90,13 +90,17 @@ function stringify(obj: any) {
     }).join('&');
 }
 
+interface SpyClientInnerOption extends SpyClientOption {
+    logServer: string;
+}
+
 export default class SpyClient {
 
     sample: any = {};
 
     markCache: any = {};
 
-    option: SpyClientOption;
+    option: SpyClientInnerOption;
 
     constructor(option: SpyClientOption) {
         if (!option.pid) {
@@ -108,7 +112,7 @@ export default class SpyClient {
             lid: option.lid,
             check: option.check !== false,
             sample: option.sample,
-            logServer: option.logServer || defaultLogServer
+            logServer: option.logServer || defaultLogServer,
         };
     }
 

@@ -4,24 +4,23 @@
  */
 
 import spyHead from './base';
-import {
-    SpyHeadConf
-} from '../lib/spyHeadInterface';
 
-export function init(conf: SpyHeadConf) {
+export function init() {
     // Longtask监控
     if (window.PerformanceObserver) {
-        const observer = new window.PerformanceObserver(function spyObserveLongtask(list: PerformanceObserverEntryList) {
-            const entryMap = spyHead.entryMap;
-            const entries = list.getEntries();
-            for (let i = 0; i < entries.length; i++) {
-                const entry = entries[i];
-                if (!entryMap[entry.entryType]) {
-                    entryMap[entry.entryType] = [];
+        const observer = new window.PerformanceObserver(
+            function spyObserveLongtask(list: PerformanceObserverEntryList) {
+                const entryMap = spyHead.entryMap;
+                const entries = list.getEntries();
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i];
+                    if (!entryMap[entry.entryType]) {
+                        entryMap[entry.entryType] = [];
+                    }
+                    entryMap[entry.entryType].push(entry);
                 }
-                entryMap[entry.entryType].push(entry);
             }
-        });
+        );
 
         spyHead.observerDestroy = function () {
             observer.disconnect();
@@ -39,6 +38,3 @@ export function init(conf: SpyHeadConf) {
         catch (e) {}
     }
 }
-
-
-

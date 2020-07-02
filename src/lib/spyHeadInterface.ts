@@ -1,12 +1,12 @@
 export interface ErrorHandlerData {
     info: {
-        msg: string;
         [propName: string]: any;
+        msg: string;
     };
     group: string;
     dim?: {
         [propName: string]: any;
-    }
+    };
 }
 
 export interface ErrorConf {
@@ -34,7 +34,7 @@ export interface SpyHeadConf {
     lid?: string;
     // 可选，自定义日志服务器
     logServer?: string;
-    jsError: ErrorConf
-    resourceError: ErrorConf
-    whiteScreenError: WhiteScreenErrorConf
+    jsError: ErrorConf;
+    resourceError: ErrorConf;
+    whiteScreenError: WhiteScreenErrorConf;
 }

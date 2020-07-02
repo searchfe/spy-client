@@ -9,7 +9,7 @@ import * as whitescreen from './head/whitescreen';
 import spyHead from './head/base';
 
 import {
-    SpyHeadConf
+    SpyHeadConf,
 } from './lib/spyHeadInterface';
 
 spyHead.init = function (conf: SpyHeadConf) {
@@ -19,7 +19,7 @@ spyHead.init = function (conf: SpyHeadConf) {
     this.conf = conf;
 
     error.init(conf);
-    observer.init(conf);
+    observer.init();
     whitescreen.init(conf);
 };
 

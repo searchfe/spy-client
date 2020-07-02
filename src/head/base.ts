@@ -4,7 +4,7 @@
  */
 
 import {
-    SpyHeadConf
+    SpyHeadConf,
 } from '../lib/spyHeadInterface';
 
 export default {
@@ -13,7 +13,9 @@ export default {
     errorDestroy() {},
     observerDestroy() {},
     entryMap: {} as any,
-    init(conf: SpyHeadConf) {},
+    init(conf: SpyHeadConf) {
+        this.conf = conf;
+    },
     send(obj: {type?: 'perf'| 'except' | 'dist' | 'count', group: string, info: any, dim?: any}, logServer?: string) {
         obj.type = obj.type || 'except';
         const conf = this.conf;

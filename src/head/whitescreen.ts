@@ -3,12 +3,12 @@
  * @author kaivean
  */
 
-import spyHead from './base';
 import {
     ErrorHandlerData,
     SpyHeadConf,
-    WhiteScreenErrorConf
+    WhiteScreenErrorConf,
 } from '../lib/spyHeadInterface';
+import spyHead from './base';
 
 export function init(conf: SpyHeadConf) {
     const whiteScreenError = conf.whiteScreenError || {} as WhiteScreenErrorConf;
