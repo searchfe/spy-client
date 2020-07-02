@@ -5,7 +5,7 @@
 
 ## 安装
 
-新版2.0部分API不再兼容
+新版2.x部分API不再兼容1.x
 
 ```
 npm install spy-client --save
@@ -195,9 +195,7 @@ spy.clearAllMark(); // 清除所有mark的信息
 
 ### spy-head使用
 
-首先进行必要配置，这段JS可以视情况script内联或嵌入其他JS里，但一定要先于head js
-
-目前spy-head里支持 全局JS报错上报，资源加载失败上报，以及根据一定规则的白屏错误上报
+spy-head JS可以视情况script内联或嵌入其他JS里
 
 > 如果要启用一项异常监控功能，需要设置其抽样sample不为0
 
@@ -714,7 +712,7 @@ export interface NavigatorInfoMetric {
 
 ## Example
 
-一些样例参考源码 [Example](https://github.com/kaivean/spy-client/blob/master/example/index.html)
+样例参考 [Example](https://github.com/kaivean/spy-client/blob/master/example/index.html)
 
 
 ## 自定义构建
