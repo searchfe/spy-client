@@ -206,7 +206,7 @@ export default [
     {
         input: 'src/spy-client-basic.ts',
         output: {
-            file: 'dist/spy-client.mjs',
+            file: 'dist/spy-client-basic.mjs',
             format: 'esm',
             name: 'SpyClient',
         },
