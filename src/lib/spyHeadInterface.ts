@@ -15,7 +15,7 @@ export interface ErrorConf {
     // 自定义spy平台的分组
     group: string;
     // 异常数据上报前的自定义处理，可以修改data对象，增加信息和维度，如果返回false，则表示不上报该数据
-    handler: (data: ErrorHandlerData) => boolean | undefined;
+    handler?: (data: ErrorHandlerData) => boolean | void | undefined;
 }
 
 export interface WhiteScreenErrorConf extends ErrorConf {
