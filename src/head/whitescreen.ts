@@ -88,7 +88,7 @@ export function init(conf: SpyHeadConf) {
             if (isWhiteScreen()) {
                 obj.info.msg = 'WhiteScren Error';
 
-                let allow: boolean | undefined = true;
+                let allow: boolean | undefined | void = true;
                 if (handler) {
                     allow = handler(obj);
                 }

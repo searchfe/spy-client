@@ -77,7 +77,7 @@ export function init(conf: SpyHeadConf) {
 
                 info.hisErrors = historys.join('----');
 
-                let allow: boolean | undefined = true;
+                let allow: boolean | undefined | void = true;
                 if (jsError.handler) {
                     allow = jsError.handler(obj);
                 }
@@ -96,7 +96,7 @@ export function init(conf: SpyHeadConf) {
                     info.xpath = getxpath(el as HTMLElement).xpath;
                 }
 
-                let allow: boolean | undefined = true;
+                let allow: boolean | undefined | void = true;
                 if (resourceError.handler) {
                     allow = resourceError.handler(obj);
                 }
