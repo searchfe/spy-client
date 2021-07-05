@@ -107,8 +107,8 @@ export default class SpyClient extends SpyClientBasic {
         this.invoke('listenResource', cb as any);
     }
 
-    listenBigImg(cb: ResourceErrorCB) {
-        this.invoke('listenBigImg', cb as any);
+    listenBigImg(cb: ResourceErrorCB, maxSize?: number) {
+        this.invoke('listenBigImg', cb as any, maxSize);
     }
 
     listenHttpResource(cb: ResourceErrorCB) {

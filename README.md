@@ -17,13 +17,13 @@ CDN方式
 
 ```html
 <!--增强版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.0.3/dist/spy-client.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.0.5/dist/spy-client.min.js" type="text/javascript"></script>
 
 <!--增强版SDK spy-head-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.0.3/dist/spy-head.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.0.5/dist/spy-head.min.js" type="text/javascript"></script>
 
 <!--基础版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.0.3/dist/spy-client-basic.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.0.5/dist/spy-client-basic.min.js" type="text/javascript"></script>
 
 ```
 
@@ -454,7 +454,8 @@ export interface ResourceMetric {
 };
 ```
 
-#### 大于100KB的大图检测
+#### 大于150KB的大图检测
+大于150KB（默认，第二个参数可以修改）的来自img标签的大图检测。
 ```javascript
 // 数据类型：异常，触发时间：500MsAfterOnLoad
 spy.listenBigImg(function (info) {

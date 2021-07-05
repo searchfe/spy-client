@@ -62,6 +62,7 @@ export default class Resource implements Module {
     private cb: ResourceCB;
     private bigImgCB: ResourceErrorCB;
     private httpResCB: ResourceErrorCB;
+    private maxImgSize: number;
 
     private readonly jsList: PerformanceResourceTiming[];
     private readonly cssList: PerformanceResourceTiming[];
@@ -93,10 +94,11 @@ export default class Resource implements Module {
         this.cb = cb;
     }
 
-    listenBigImg(cb: ResourceErrorCB) {
+    listenBigImg(cb: ResourceErrorCB, maxSize = 150) {
         if (!this.check()) {
             return;
         }
+        this.maxImgSize = maxSize * 1024;
         this.bigImgCB = cb;
     }
 
@@ -227,7 +229,7 @@ export default class Resource implements Module {
             }
 
             // 大于102400=100K的采集
-            if (timing.decodedBodySize > 102400) {
+            if (timing.decodedBodySize > this.maxImgSize) {
                 this.bigImgList.push(timing);
             }
 
