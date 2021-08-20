@@ -1,14 +1,13 @@
-// import Debug from 'debug';
-// import { PageApi } from "./pageApi";
-// import WebbInstance from 'webb/instance';
-// import _ from '@searchfe/underscore';
 
-// const WEBB_PID = '1_1';
-// const WEBB_TYPE = 'pf_comm';
-// const WEBB_GROUP = 'resource';
-// const debug = Debug('perfcollect:resource');
-
-import {Module, ResourceMetric, ResourceCB, ResourceErrorCB, ResType} from '../lib/interface';
+import {
+    Module, ResourceMetric, ResourceCB, ResourceErrorCB, ResType,
+    ResOption,
+    BigImgOption,
+    HttpResOption,
+    SlowOption,
+    ResourceHostMetric
+} from '../lib/interface';
+import {getUrlInfo, URLINFO, assign, getResTiming} from '../lib/util';
 
 
 // URL拓展
@@ -32,9 +31,18 @@ enum FontsTypes {
 
 // 忽略图片
 // 下述图片路径往往是用来进行日志统计，不是正常图片
-enum IgnoreImgPath {
+const ignoreDefaultPaths = [
     '/mwb2.gif',
-};
+];
+
+function ignorePath(url: string, paths: string[]) {
+    for (const path of paths) {
+        if (url.indexOf(path) > -1) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function getxpath(el: Element | null) {
     if (!el) {
@@ -42,7 +50,11 @@ function getxpath(el: Element | null) {
     }
     const xpath = [];
     while (el && el.nodeType === 1 && el !== el.parentNode) {
-        xpath.push(el.tagName.toLowerCase());
+        let t = el.tagName.toLowerCase();
+        if (el.classList && el.classList.length && el.classList[0]) {
+            t += '[.' + el.classList[0] + ']';
+        }
+        xpath.push(t);
 
         if (el === document.body) {
             break;
@@ -58,20 +70,35 @@ function f(n: number): number {
     return +n.toFixed(1);
 }
 
+interface ListItem {
+    timing: PerformanceResourceTiming;
+    type: string;
+}
+
+interface ListWithHost {
+    [host: string]: ListItem[];
+}
+
 export default class Resource implements Module {
     private cb: ResourceCB;
     private bigImgCB: ResourceErrorCB;
     private httpResCB: ResourceErrorCB;
-    private maxImgSize: number;
+    private slowResCB: ResourceErrorCB;
+    private resOption: ResOption;
+    private bigImgOption: BigImgOption;
+    private httpResOption: HttpResOption;
+    private slowOption: SlowOption;
+    private trigger: string = 'load';
 
     private readonly jsList: PerformanceResourceTiming[];
     private readonly cssList: PerformanceResourceTiming[];
     private readonly imgList: PerformanceResourceTiming[];
     private readonly fontList: PerformanceResourceTiming[];
-    private readonly imgTnList: PerformanceResourceTiming[];
 
-    private readonly bigImgList: PerformanceResourceTiming[];
-    private readonly httpResList: PerformanceResourceTiming[];
+    private readonly hostList: ListWithHost;
+    private readonly bigImgList: ListWithHost;
+    private readonly httpResList: ListWithHost;
+    private readonly slowList: ListWithHost;
 
     constructor() {
         this.jsList = [];
@@ -79,113 +106,210 @@ export default class Resource implements Module {
         this.imgList = [];
         this.fontList = [];
 
-        this.bigImgList = [];
-        this.httpResList = [];
+        this.hostList = {};
+        this.bigImgList = {};
+        this.httpResList = {};
+        this.slowList = {};
+
+        this.resOption = {ignorePaths: [], trigger: 'load'};
+        this.bigImgOption = {ignorePaths: [], maxSize: 150 * 1024, trigger: 'load'};
+        this.httpResOption = {ignorePaths: [], trigger: 'load'};
+        this.slowOption = {ignorePaths: [], trigger: 'load', threshold: 1000};
     }
 
     check() {
         return performance && performance.getEntriesByType;
     }
 
-    listenResource(cb: ResourceCB) {
+    listenResource(cb: ResourceCB, option: ResOption = {}) {
         if (!this.check()) {
             return;
         }
+        this.resOption = assign(this.resOption, option);
+        this.trigger = this.resOption.trigger as string;
         this.cb = cb;
     }
 
-    listenBigImg(cb: ResourceErrorCB, maxSize = 150) {
+    listenBigImg(cb: ResourceErrorCB, option: BigImgOption = {}) {
         if (!this.check()) {
             return;
         }
-        this.maxImgSize = maxSize * 1024;
+        this.bigImgOption = assign(this.bigImgOption, option);
+        this.trigger = this.bigImgOption.trigger as string;
         this.bigImgCB = cb;
     }
 
-    listenHttpResource(cb: ResourceErrorCB) {
+    listenHttpResource(cb: ResourceErrorCB, option: HttpResOption = {}) {
         if (!this.check()) {
             return;
         }
-
+        this.httpResOption = assign(this.httpResOption, option);
+        this.trigger = this.httpResOption.trigger as string;
         this.httpResCB = cb;
     }
 
+    listenSlowResource(cb: ResourceErrorCB, option: SlowOption = {}) {
+        if (!this.check()) {
+            return;
+        }
+        this.slowOption = assign(this.slowOption, option);
+        this.trigger = this.slowOption.trigger as string;
+        this.slowResCB = cb;
+    }
+
+    report() {
+        const metricRes = this.getMetric();
+        if (metricRes) {
+            const {metric, hostMetric} = metricRes;
+            this.cb && this.cb(metric, hostMetric);
+        }
+
+        if (this.bigImgCB) {
+            // 发送大图监控数据
+            if (window.requestIdleCallback && Object.keys(this.bigImgList).length && this.bigImgCB) {
+                window.requestIdleCallback(() => {
+                    for (const host of Object.keys(this.bigImgList)) {
+                        for (const entry of this.bigImgList[host]) {
+                            const timing = entry.timing;
+                            const type = entry.type;
+                            try {
+                                const img = document.body.querySelector('img[src="' + timing.name + '"]');
+                                this.bigImgCB({
+                                    msg: timing.name,
+                                    dur: timing.duration,
+                                    xpath: getxpath(img).xpath,
+                                    host,
+                                    type,
+                                });
+                            }
+                            catch (e) {
+                                console.error(e);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        if (this.httpResCB) {
+            // 发送http资源监控数据
+            if (window.requestIdleCallback && Object.keys(this.httpResList).length && this.httpResCB) {
+                window.requestIdleCallback(() => {
+                    for (const host of Object.keys(this.httpResList)) {
+                        for (const entry of this.httpResList[host]) {
+                            const timing = entry.timing;
+                            const type = entry.type;
+                            try {
+                                const img = document.body.querySelector('[src="' + timing.name + '"]');
+                                this.httpResCB({
+                                    msg: timing.name,
+                                    dur: timing.duration,
+                                    xpath: getxpath(img).xpath,
+                                    host,
+                                    type,
+                                });
+                            }
+                            catch (e) {
+                                console.error(e);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        if (this.slowResCB) {
+            // 发送慢资源监控数据
+            if (window.requestIdleCallback && Object.keys(this.slowList).length && this.httpResCB) {
+                window.requestIdleCallback(() => {
+                    for (const host of Object.keys(this.slowList)) {
+                        for (const entry of this.slowList[host]) {
+                            const timing = entry.timing;
+                            const type = entry.type;
+                            try {
+                                const img = document.body.querySelector('[src="' + timing.name + '"]');
+
+                                const info = getResTiming(timing);
+
+                                this.slowResCB({
+                                    ...info,
+                                    dur: timing.duration,
+                                    msg: timing.name,
+                                    xpath: getxpath(img).xpath,
+                                    host,
+                                    type,
+                                });
+                            }
+                            catch (e) {
+                                console.error(e);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     load() {
+        if (this.trigger !== 'load') {
+            return;
+        }
         if (!this.check()) {
             return;
         }
 
         setTimeout(() => {
-            const metric = this.getMetric();
-            if (metric) {
-                this.cb && this.cb(metric);
-            }
-
-            // 发送大图监控数据
-            if (window.requestIdleCallback && this.bigImgList.length && this.bigImgCB) {
-                window.requestIdleCallback(() => {
-                    for (const entry of this.bigImgList) {
-                        try {
-                            const img = document.body.querySelector('img[src="' + entry.name + '"]');
-                            this.bigImgCB({
-                                msg: entry.name,
-                                xpath: getxpath(img).xpath,
-                            });
-                        }
-                        catch (e) {
-                            console.error(e);
-                        }
-                    }
-                });
-            }
-
-            // 发送http资源监控数据
-            if (window.requestIdleCallback && this.httpResList.length && this.httpResCB) {
-                window.requestIdleCallback(() => {
-                    for (const entry of this.httpResList) {
-                        try {
-                            const img = document.body.querySelector('[src="' + entry.name + '"]');
-                            this.httpResCB({
-                                msg: entry.name,
-                                xpath: getxpath(img).xpath,
-                            });
-                        }
-                        catch (e) {
-                            console.error(e);
-                        }
-                    }
-                });
-            }
+            this.report();
         }, 500);
     }
 
-    private getUrlObj(url: string): UrlObj {
-        try {
-            const urlObj: UrlObj = new URL(url);
-            const split = urlObj.pathname.split('.');
-            urlObj.ext = split[split.length - 1];
-            return urlObj;
+    leave() {
+        if (this.trigger !== 'leave') {
+            return;
         }
-        catch (error) {
-            return ({} as UrlObj);
-        }
+        this.report();
     }
 
-    private collectHttpResInHttps(timing: PerformanceResourceTiming) {
-        if (location.protocol === 'https:' && timing.name.indexOf('http://') === 0) {
-            this.httpResList.push(timing);
+    private push(type: string, list: any, timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        if (!ignorePath(urlInfo.pathname, this.resOption.ignorePaths || [])) {
+            list.push(timing);
+            this.pushWithHost(type, this.hostList, timing, urlInfo);
+        }
+
+        if (!ignorePath(urlInfo.pathname, this.slowOption.ignorePaths || [])) {
+            if (timing.duration > (this.slowOption.threshold as number)) {
+                this.pushWithHost(type, this.slowList, timing, urlInfo);
+            }
+        }
+
+    }
+
+    private pushWithHost(type: string, list: any, timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        const host = urlInfo.host;
+        if (!list[host]) {
+            list[host] = [] as ListItem[];
+        }
+        list[host].push({
+            timing,
+            type,
+        });
+    }
+
+    private collectHttpResInHttps(type: string, timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        if (location.protocol === 'https:'
+            && timing.name.indexOf('http://') === 0
+            && !ignorePath(urlInfo.pathname, this.httpResOption.ignorePaths || [])
+        ) {
+            this.pushWithHost(type, this.httpResList, timing, urlInfo);
         }
     }
 
     // 有些jsonp也属于script，这里只统计js后缀的文件
-    private addScript(timing: PerformanceResourceTiming) {
-        const {ext} = this.getUrlObj(timing.name);
-        if (ext === 'js') {
+    private addScript(timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        if (urlInfo.ext === 'js') {
             if (timing.decodedBodySize !== 0) {
-                this.jsList.push(timing);
+                this.push('js', this.jsList, timing, urlInfo);
             }
-
-            this.collectHttpResInHttps(timing);
         }
     }
 
@@ -194,70 +318,67 @@ export default class Resource implements Module {
     // 2、加载背景图（图片不容易区分，有的没有明确后缀名）
     // 3、光标文件（后缀为.cur，这里也划分为图片）
     // （svg当做图片，前述已说明）
-    private addCss(timing: PerformanceResourceTiming) {
-        const {ext} = this.getUrlObj(timing.name);
-        if (ext && FontsTypes.hasOwnProperty(ext)) {
-            this.fontList.push(timing);
+    private addResFromCss(timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        if (urlInfo.ext && FontsTypes.hasOwnProperty(urlInfo.ext)) {
+            this.push('font', this.fontList, timing, urlInfo);
         }
         else {
-            this.imgList.push(timing);
+            this.addImg(timing, urlInfo);
         }
     }
 
     // link一般加载css资源
     // 也可以通过preload可以预下载一些资源
     // 这里只统计js类型的preload
-    private addLink(timing: PerformanceResourceTiming) {
-        const {ext} = this.getUrlObj(timing.name);
-        if (ext === 'css') {
-            this.cssList.push(timing);
+    private addLink(timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        if (urlInfo.ext === 'css') {
+            this.push('css', this.cssList, timing, urlInfo);
         }
         // preload as script
-        else if (ext === 'js') {
-            this.jsList.push(timing);
+        else if (urlInfo.ext === 'js') {
+            this.push('js', this.jsList, timing, urlInfo);
         }
     }
 
-    private addImg(timing: PerformanceResourceTiming) {
-        const {pathname} = this.getUrlObj(timing.name);
-        if (!IgnoreImgPath.hasOwnProperty(pathname)) {
-            this.imgList.push(timing);
+    private addImg(timing: PerformanceResourceTiming, urlInfo: URLINFO) {
+        this.push('img', this.imgList, timing, urlInfo);
 
-            // 识别出处理webp的url
-            if (timing.name.indexOf('fm=') > -1 && timing.name.indexOf('webpstat=1') > -1) {
-                this.imgTnList.push(timing);
-            }
-
-            // 大于102400=100K的采集
-            if (timing.decodedBodySize > this.maxImgSize) {
-                this.bigImgList.push(timing);
-            }
-
-            this.collectHttpResInHttps(timing);
+        // 大于指定size的图片采集
+        if (
+            timing.decodedBodySize > (this.bigImgOption.maxSize || 0)
+            && !ignorePath(urlInfo.pathname, this.bigImgOption.ignorePaths || [])
+        ) {
+            this.pushWithHost('img', this.bigImgList, timing, urlInfo);
         }
     }
 
     private handleTimings(list: PerformanceEntry[]) {
         const len = list.length;
         for (let i = 0; i < len; i++) {
+            const timing = list[i] as PerformanceResourceTiming;
+            const urlInfo = getUrlInfo(timing.name);
+
+            if (ignorePath(urlInfo.pathname, ignoreDefaultPaths)) {
+                continue;
+            }
             switch ((list[i] as any).initiatorType) {
                 case 'script':
-                    this.addScript(list[i] as PerformanceResourceTiming);
+                    this.addScript(timing, urlInfo);
                     break;
                 case 'css':
-                    this.addCss(list[i] as PerformanceResourceTiming);
+                    this.addResFromCss(timing, urlInfo);
                     break;
                 case 'img':
-                    this.addImg(list[i] as PerformanceResourceTiming);
+                    this.addImg(timing, urlInfo);
                     break;
                 case 'link':
-                    this.addLink(list[i] as PerformanceResourceTiming);
+                    this.addLink(timing, urlInfo);
                     break;
                 case 'audio':
-                    this.collectHttpResInHttps(list[i] as PerformanceResourceTiming);
+                    this.collectHttpResInHttps('audio', timing, urlInfo);
                     break;
                 case 'video':
-                    this.collectHttpResInHttps(list[i] as PerformanceResourceTiming);
+                    this.collectHttpResInHttps('video', timing, urlInfo);
                     break;
                 default:
                     break;
@@ -265,7 +386,7 @@ export default class Resource implements Module {
         }
     }
 
-    private getNumAndSize(type: ResType) {
+    private getNumAndSize(type: string, list: PerformanceResourceTiming[]) {
         const obj: any = {};
         const num = type + 'Num';
         const size = type + 'Size';
@@ -276,7 +397,7 @@ export default class Resource implements Module {
         obj[size] = 0;
         obj[transferSize] = 0;
         let totalDurationTime = 0;
-        (this as any)[type + 'List'].forEach((timing: PerformanceResourceTiming) => {
+        list.forEach((timing: PerformanceResourceTiming) => {
             obj[num]++;
             obj[size] += (timing.decodedBodySize / 1024);
             obj[transferSize] += (timing.transferSize / 1024);
@@ -295,7 +416,7 @@ export default class Resource implements Module {
         return obj;
     }
 
-    private getMetric(): ResourceMetric | undefined {
+    private getMetric(): {metric: ResourceMetric, hostMetric: ResourceHostMetric} | undefined {
         // 原来代码
         const {0: mainPageTiming} = performance.getEntriesByType('navigation');
         const resourceTimings = performance.getEntriesByType('resource');
@@ -304,10 +425,10 @@ export default class Resource implements Module {
             this.handleTimings(resourceTimings);
 
             let metric: ResourceMetric = {
-                ...this.getNumAndSize(ResType.JS),
-                ...this.getNumAndSize(ResType.CSS),
-                ...this.getNumAndSize(ResType.IMG),
-                ...this.getNumAndSize(ResType.FONT),
+                ...this.getNumAndSize(ResType.JS, this.jsList),
+                ...this.getNumAndSize(ResType.CSS, this.cssList),
+                ...this.getNumAndSize(ResType.IMG, this.imgList),
+                ...this.getNumAndSize(ResType.FONT, this.fontList),
             };
 
             // 主文档大小
@@ -329,7 +450,13 @@ export default class Resource implements Module {
                 + metric.imgTransferSize
                 + metric.fontTransferSize);
 
-            return metric;
+            const hostMetric: ResourceHostMetric = {};
+            for (const host of Object.keys(this.hostList)) {
+                const timings = this.hostList[host].map(item => item.timing);
+                hostMetric[host] = this.getNumAndSize('host', timings);
+            }
+
+            return {metric, hostMetric};
         }
         return;
     }

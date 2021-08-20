@@ -3,7 +3,8 @@
  * @author kaivean
  */
 
-import SpyClient from '../../dist/spy-client';
+import SpyClient from 'spy-client';
+
 
 describe('mark', async () => {
     let time: number;
@@ -21,7 +22,7 @@ describe('mark', async () => {
             setTimeout(() => {
                 time = spy.endMark('playtime');
                 time2 = spy.endMark('playtime2');
-                resolve();
+                resolve('');
             }, 50);
         });
     });

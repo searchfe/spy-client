@@ -3,7 +3,7 @@
  * @author kaivean
  */
 
-import SpyClient from '../../dist/spy-client';
+// import SpyClient from 'spy-client';
 
 window.__spyHead.init({
     pid: '1_1000',
@@ -59,7 +59,7 @@ async function checkSend(option: any, triggerCb: () => void, finishCb?: (urlObj:
         const timer = setTimeout(() => {
             expect('timeout > ' + option.timeout).toBe('failure');
             recover();
-            resolve();
+            resolve('');
         }, option.timeout);
 
         function checkUrl(url: string) {
@@ -75,7 +75,7 @@ async function checkSend(option: any, triggerCb: () => void, finishCb?: (urlObj:
                 finishCb(urlObj);
             }
             recover();
-            resolve();
+            resolve('');
         }
 
         spyOn(navigator, 'sendBeacon').and.callFake(url => { // specify callFake

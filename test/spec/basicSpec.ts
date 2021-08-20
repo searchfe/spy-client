@@ -3,7 +3,13 @@
  * @author kaivean
  */
 
-import SpyClient from '../../dist/spy-client';
+import SpyClient from 'spy-client';
+
+// import SpyClient from 'spy-client/dist/spy-client';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+// const SpyClientClass: typeof SpyClient = require('spy-client');
+// const SpyClient = window.SpyClient;
 
 async function checkSend(option: any, triggerCb: (spy: any) => void, finishCb?: (spy: any) => void) {
     const spy = new SpyClient({
@@ -29,7 +35,7 @@ async function checkSend(option: any, triggerCb: (spy: any) => void, finishCb?: 
         const timer = setTimeout(() => {
             expect('timeout > 2000').toBe('failure');
             recover();
-            resolve();
+            resolve('');
         }, 2000);
 
         function checkUrl(url: string) {
@@ -47,7 +53,7 @@ async function checkSend(option: any, triggerCb: (spy: any) => void, finishCb?: 
                 finishCb(spy);
             }
             recover();
-            resolve();
+            resolve('');
         }
 
         spyOn(navigator, 'sendBeacon').and.callFake(url => { // specify callFake

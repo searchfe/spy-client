@@ -8,6 +8,8 @@ import {
     SpyHeadConf,
     WhiteScreenErrorConf,
 } from '../lib/spyHeadInterface';
+import {getResTiming} from '../lib/util';
+
 import spyHead from './base';
 
 export function init(conf: SpyHeadConf) {
@@ -23,11 +25,12 @@ export function init(conf: SpyHeadConf) {
         if (!window.performance) {
             return false;
         }
-        const pf = window.performance.timing;
-        const netStr = `&dns=${pf.domainLookupEnd - pf.domainLookupStart}`
-            + `&tcp=${pf.connectEnd - pf.connectStart}`
-            + `&requestTime=${pf.responseStart - pf.requestStart}`
-            + `&resoneTime=${pf.responseEnd - pf.responseStart}`;
+        const pf = getResTiming(window.performance.timing);
+        const netStr = `&wait=${pf.wait}`
+            + `&dns=${pf.dns}`
+            + `&connect=${pf.connect}`
+            + `&requestTime=${pf.req}`
+            + `&resoneTime=${pf.res}`;
         return netStr;
     }
 

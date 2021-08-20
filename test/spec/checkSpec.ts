@@ -3,7 +3,7 @@
  * @author kaivean
  */
 
-import SpyClient from '../../dist/spy-client';
+import SpyClient from 'spy-client';
 
 async function checkConsoleLog(option: any, triggerCb: (spy: any) => void, finishCb?: (spy: any, msg: string) => void) {
     const spy = new SpyClient({
@@ -21,7 +21,7 @@ async function checkConsoleLog(option: any, triggerCb: (spy: any) => void, finis
         const timer = setTimeout(() => {
             expect('timeout > 2000').toBe('failure');
             recover();
-            resolve();
+            resolve('');
         }, 2000);
 
         spyOn(console, 'error').and.callFake((msg: string) => { // specify callFake
@@ -30,7 +30,7 @@ async function checkConsoleLog(option: any, triggerCb: (spy: any) => void, finis
                 finishCb(spy, msg);
             }
             recover();
-            resolve();
+            resolve('');
             return true;
         });
 

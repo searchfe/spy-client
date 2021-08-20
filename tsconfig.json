@@ -1,15 +1,15 @@
+// 该配置用于 src 和 test目录的ts
 {
     "compilerOptions": {
         // ts-node does not support any module syntax other than commonjs
-        // 生成代码的模块风格是CommonJS 、 ES6（export）、UMD、AMD等风格
-        "module": "CommonJS",
+        // 生成代码的模块风格是commonjs 、ES6 or es2015、amd、umd、ESNext等风格
+        "module": "ES6",
 
         // tsc编译输出的代码的es版本
-        "target": "es5", // 生成的代码是 es5 es6 es2017 es2018 es
+        "target": "ES5", // 生成的代码是 ES3 ES5 ES6 or ES2015 ES2016 ES2017 ESNEXT
 
-        "sourceMap": true,
-        // 开启为true，会报错如：无法写入文件“xxx.js”，因为它会覆盖输入文件
-        // "allowJs": true,
+        "sourceMap": false,
+        // "allowJs": true, // 不能和declaration一起使用
         "noImplicitReturns": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
@@ -18,22 +18,23 @@
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
 
+        "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
 
-        "lib": ["es6", "dom", "scripthost"],
+        "lib": ["es6", "ES5", "dom", "scripthost"],
 
+        "declaration": true, // 产出 *.d.ts，不能和allowJs一起使用
+        "declarationDir": "./dist",
         "baseUrl": ".",
         "paths": {
-            "spy-client": ["./dist/spy-client.d.ts"]
+
         }
     },
     "compileOnSave": false,
     "include": [
-        "**/*.ts",
-        "test/**/*.ts",
-        "dist/*.ts"
+        "src/**/*.ts"
     ],
     "exclude": [
-
+        "**/*Spec.ts"
     ]
 }

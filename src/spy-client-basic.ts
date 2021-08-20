@@ -4,6 +4,7 @@
  */
 
 import {SpyClientOption} from './lib/interface';
+import {assign} from './lib/util';
 
 interface Option {
     /**
@@ -131,7 +132,7 @@ export default class SpyClient {
             return;
         }
 
-        query = Object.assign(
+        query = assign(
             {
                 pid: this.option.pid,
                 lid: this.option.lid,
@@ -233,7 +234,7 @@ export default class SpyClient {
      * @param option 配置
      */
     sendPerf(option: Option) {
-        this.send(Object.assign({
+        this.send(assign({
             type: 'perf',
         }, option));
     }
@@ -243,7 +244,7 @@ export default class SpyClient {
      * @param option 错误配置项
      */
     sendExcept(option: ErrorOption) {
-        this.send(Object.assign({
+        this.send(assign({
             type: 'except',
         }, option));
     }
@@ -253,7 +254,7 @@ export default class SpyClient {
      * @param option 配置
      */
     sendDist(option: Option) {
-        this.send(Object.assign({
+        this.send(assign({
             type: 'dist',
         }, option));
     }
@@ -263,7 +264,7 @@ export default class SpyClient {
      * @param option 配置
      */
     sendCount(option: Option) {
-        this.send(Object.assign({
+        this.send(assign({
             type: 'count',
         }, option));
     }
@@ -274,8 +275,8 @@ export default class SpyClient {
      * @param option 错误配置项
      */
     sendExceptForError(e: Error, option: ErrorOption) {
-        const newOpt: ErrorOption = Object.assign({}, option);
-        newOpt.info = Object.assign({}, option.info || {}, {
+        const newOpt: ErrorOption = assign({}, option);
+        newOpt.info = assign({}, option.info || {}, {
             msg: e.message,
             stack: e.stack,
         });

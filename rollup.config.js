@@ -3,12 +3,12 @@
  * @author kaivean
  */
 
-import babel from 'rollup-plugin-babel';
+// import babel from 'rollup-plugin-babel';
 import {uglify} from 'rollup-plugin-uglify';
 import replace from 'rollup-plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import typescript from 'rollup-plugin-typescript2';
-// 这个官方正式插件有bug
+// 这个官方正式插件有bug，不输出声明文件
 // import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 
@@ -24,47 +24,9 @@ function genPlugins(opt = {}) {
 
     plugins.push(commonjs());
     plugins.push(typescript({
-        tsconfig: 'tsconfig.src.json',
+        outDir: './dist',
+        tsconfig: 'tsconfig.json',
     }));
-
-    if (opt.head) {
-        plugins.push(babel({
-            // babelrc: false,
-            presets: [
-                [
-                    '@babel/preset-env',
-                    {
-                        useBuiltIns: false, //  spy-head不做polyfill，为了节省体积
-                    },
-                ],
-            ],
-            extensions: ['ts'],
-        }));
-    }
-    else if (!opt.es6) {
-        plugins.push(babel({
-            // babelrc: false,
-            // presets: [
-            //     [
-            //         '@babel/preset-env',
-            //         {
-            //             useBuiltIns: 'usage',
-            //             corejs: 3,
-            //             targets: [
-            //                 '> 1%',
-            //                 'last 2 versions',
-            //                 'ie >= 6',
-            //                 'android >= 2.3',
-            //                 'ios >= 7',
-            //             ],
-            //             debug: isDevelopment,
-            //         },
-            //     ],
-            // ],
-            extensions: ['ts'],
-        }));
-    }
-
 
     plugins.push(replace({
         'process.env.NODE_ENV': JSON.stringify(isDevelopment ? 'development' : 'production'),

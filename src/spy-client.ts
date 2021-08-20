@@ -23,6 +23,11 @@ import {
     TimingCB,
     TTICB,
     TTIOption,
+
+    ResOption,
+    BigImgOption,
+    HttpResOption,
+    SlowOption
 } from './lib/interface';
 
 import FID from './module/fid';
@@ -103,16 +108,20 @@ export default class SpyClient extends SpyClientBasic {
         return this.invoke('getNavigatorInfo');
     }
 
-    listenResource(cb: ResourceCB) {
-        this.invoke('listenResource', cb as any);
+    listenResource(cb: ResourceCB, option?: ResOption) {
+        this.invoke('listenResource', cb as any, option);
     }
 
-    listenBigImg(cb: ResourceErrorCB, maxSize?: number) {
-        this.invoke('listenBigImg', cb as any, maxSize);
+    listenBigImg(cb: ResourceErrorCB, option?: BigImgOption) {
+        this.invoke('listenBigImg', cb as any, option);
     }
 
-    listenHttpResource(cb: ResourceErrorCB) {
-        this.invoke('listenHttpResource', cb as any);
+    listenHttpResource(cb: ResourceErrorCB, option?: HttpResOption) {
+        this.invoke('listenHttpResource', cb as any, option);
+    }
+
+    listenSlowResource(cb: ResourceErrorCB, option?: SlowOption) {
+        this.invoke('listenSlowResource', cb as any, option);
     }
 
     listenTiming(cb: TimingCB) {

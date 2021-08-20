@@ -8,6 +8,8 @@ import {
     SpyHeadConf,
     ErrorConf,
 } from '../lib/spyHeadInterface';
+import {getUrlInfo} from '../lib/util';
+
 import spyHead from './base';
 
 export function init(conf: SpyHeadConf) {
@@ -17,11 +19,16 @@ export function init(conf: SpyHeadConf) {
     const isSendResource =  Math.random() < (resourceError.sample ? resourceError.sample : 0);
 
     const winerrors = spyHead.winerrors;
+    let resourceErrorCount = 0;
 
     function getxpath(el: HTMLElement) {
         const xpath = [];
         while (el && el.nodeType === 1 && el !== el.parentNode) {
-            xpath.push(el.tagName.toLowerCase());
+            let t = el.tagName.toLowerCase();
+            if (el.classList && el.classList.length && el.classList[0]) {
+                t += '[.' + el.classList[0] + ']';
+            }
+            xpath.push(t);
             if (el === document.body) {
                 break;
             }
@@ -47,6 +54,7 @@ export function init(conf: SpyHeadConf) {
             info.deviceMemory = navigator.deviceMemory || 0;
             info.hardwareConcurrency = navigator.hardwareConcurrency || 0;
 
+            // JS错误
             if (srcElement === window) {
                 obj.group = jsError.group;
 
@@ -72,7 +80,6 @@ export function init(conf: SpyHeadConf) {
                     const item = spyHead.winerrors[index];
                     const prefix = item.count > 1 ? `(${item.count})` : '';
                     historys.push(prefix + (item.msg as string));
-
                 }
 
                 info.hisErrors = historys.join('----');
@@ -86,14 +93,22 @@ export function init(conf: SpyHeadConf) {
                     spyHead.send(obj);
                 }
             }
+            // 资源错误
             else {
                 obj.group = resourceError.group;
                 (obj.dim as any).type = (srcElement as HTMLElement).tagName.toLowerCase();
+
                 const url = (srcElement as HTMLScriptElement).src || (srcElement as HTMLLinkElement).href;
                 info.msg = url || 'unknown load eror';
 
+                (obj.dim as any).host = getUrlInfo(url).host;
+
                 if (el && (el as HTMLElement).tagName === 'IMG') {
                     info.xpath = getxpath(el as HTMLElement).xpath;
+                }
+
+                if (resourceErrorCount) {
+                    info.hisErrCount = resourceErrorCount;
                 }
 
                 let allow: boolean | undefined | void = true;
@@ -104,6 +119,8 @@ export function init(conf: SpyHeadConf) {
                 if (allow !== false && isSendResource) {
                     spyHead.send(obj);
                 }
+
+                resourceErrorCount++;
             }
 
             // 有些错误一下出现很多次，都聚合都一个错误，加上次数

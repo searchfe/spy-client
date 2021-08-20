@@ -3,9 +3,9 @@
  * @author kaivean
  */
 
-
 interface Window {
-    // SpyClient: any;
+    SpyClient: any;
+    __spyHead: any;
 }
 
 interface Event {
@@ -20,3 +20,10 @@ interface Event {
     sourceURL: any;
     errorCharacter?: number;
 }
+
+interface PerformanceTiming {
+    domFirstPaint?: number;
+    domFirstScreenPaint?: number;
+}
+
+

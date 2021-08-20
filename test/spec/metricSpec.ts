@@ -3,9 +3,8 @@
  * @author kaivean
  */
 
-import SpyClient from '../../dist/spy-client';
-import { resolve } from 'dns';
-import { rejects } from 'assert';
+import SpyClient from 'spy-client';
+
 
 describe('metric', async () => {
     let spy: SpyClient;
@@ -88,7 +87,7 @@ describe('metric', async () => {
                 expect(typeof metric.tcp).toBe('number');
                 expect(typeof metric.dns).toBe('number');
 
-                resolve()
+                resolve('');
             });
         });
 
@@ -103,7 +102,7 @@ describe('metric', async () => {
             spy.listenTTI(metric => {
                 expect(typeof metric.tti).toBe('number');
                 expect(metric.tti).toBeGreaterThan(0);
-                resolve();
+                resolve('');
             });
         });
     });
@@ -128,7 +127,7 @@ describe('metric', async () => {
                 expect(typeof metric.imgSize).toBe('number');
                 expect(typeof metric.headerSize).toBe('number');
 
-                resolve()
+                resolve('');
             });
         });
     });
@@ -144,7 +143,7 @@ describe('metric', async () => {
                 expect(metric.msg === 'https://expertimg.cdn.bcebos.com/expertcms/med/zhongyao.jpg').toBe(true);
                 expect(metric.xpath.includes('<')).toBe(true);
 
-                resolve();
+                resolve('');
             });
         });
     });
@@ -168,7 +167,7 @@ describe('metric', async () => {
                 expect(metric.fspLongtaskRate).toBeLessThanOrEqual(100);
                 expect(metric.fspLongtaskRate).toBeGreaterThanOrEqual(0);
 
-                resolve();
+                resolve('');
             });
         });
     });
@@ -190,7 +189,7 @@ describe('metric', async () => {
                 expect(metric.lcpLongtaskRate).toBeLessThanOrEqual(100);
                 expect(metric.lcpLongtaskRate).toBeGreaterThanOrEqual(0);
 
-                resolve();
+                resolve('');
             });
         });
     });
@@ -212,7 +211,7 @@ describe('metric', async () => {
                 expect(metric.loadLongtaskRate).toBeLessThanOrEqual(100);
                 expect(metric.loadLongtaskRate).toBeGreaterThanOrEqual(0);
 
-                resolve();
+                resolve('');
             });
         });
     });
@@ -229,7 +228,7 @@ describe('metric', async () => {
                 expect(typeof metric.lcp).toBe('number');
                 expect(metric.lcp).toBeGreaterThan(0);
 
-                resolve();
+                resolve('');
             });
         });
     });
@@ -254,7 +253,7 @@ describe('metric', async () => {
                 expect(metric.pageLongtaskRate).toBeLessThanOrEqual(100);
                 expect(metric.pageLongtaskRate).toBeGreaterThanOrEqual(0);
 
-                resolve();
+                resolve('');
             });
         }));
 
@@ -268,7 +267,7 @@ describe('metric', async () => {
                 expect(metric.usedJSHeapRate).toBeLessThanOrEqual(100);
                 expect(metric.usedJSHeapRate).toBeGreaterThanOrEqual(0);
 
-                resolve();
+                resolve('');
             });
         }));
 
@@ -278,7 +277,7 @@ describe('metric', async () => {
                 expect(typeof metric.layoutShift).toBe('number');
                 expect(metric.layoutShift).toBeGreaterThanOrEqual(0);
 
-                resolve();
+                resolve('');
             });
         }));
 

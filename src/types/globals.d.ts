@@ -7,7 +7,7 @@ interface Window {
     __spyHead: any;
     __spyclientConf: any;
     PerformanceObserver: any;
-    requestIdleCallback: (callback: Function, options?: any) => void;
+    requestIdleCallback?: (callback: Function, options?: any) => void;
 }
 
 interface Event {

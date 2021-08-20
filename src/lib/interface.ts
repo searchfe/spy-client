@@ -86,12 +86,26 @@ export interface ResourceMetric {
     imgTransferSize: number;
     fontTransferSize: number;
 
+    jsDuration: number;
+    cssDuration: number;
+    imgDuration: number;
+    fontDuration: number;
+
     // js cache率
     jsCacheRate: number;
     cssCacheRate: number;
     imgCacheRate: number;
 };
-export type ResourceCB = (metric: ResourceMetric) => void;
+export interface ResourceHostMetric {
+    [host: string]: {
+        hostNum: number;
+        hostSize: number;
+        hostTransferSize: number;
+        hostDuration: number;
+        hostCacheRate: number;
+    };
+};
+export type ResourceCB = (metric: ResourceMetric, hostMetric: ResourceHostMetric) => void;
 
 
 export interface ResourceErrorInfo {
@@ -99,6 +113,12 @@ export interface ResourceErrorInfo {
     msg: string;
     // 发生异常的资源元素的xpath信息，一直到body
     xpath: string;
+    // 资源host
+    host: string;
+    // 资源类型
+    type: string;
+    // 资源耗时
+    dur?: number;
 }
 export type ResourceErrorCB = (info: ResourceErrorInfo) => void;
 
@@ -255,3 +275,28 @@ export interface PageLongtaskMetric {
     pageIframeLongtaskNum: number;
 }
 export type PageLongtaskCB = (metric: PageLongtaskMetric) => void;
+
+
+export interface ResOption {
+    ignorePaths?: string[];
+    trigger?: 'load' | 'leave';
+}
+
+export interface BigImgOption {
+    maxSize?: number;
+    ignorePaths?: string[];
+    trigger?: 'load' | 'leave';
+}
+
+export interface HttpResOption {
+    ignorePaths?: string[];
+    trigger?: 'load' | 'leave';
+}
+
+export interface SlowOption {
+    threshold?: number;
+    ignorePaths?: string[];
+    trigger?: 'load' | 'leave';
+}
+
+
