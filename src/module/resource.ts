@@ -5,17 +5,9 @@ import {
     BigImgOption,
     HttpResOption,
     SlowOption,
-    ResourceHostMetric
+    ResourceHostMetric,
 } from '../lib/interface';
 import {getUrlInfo, URLINFO, assign, getResTiming, getxpath} from '../lib/util';
-
-
-// URL拓展
-// 增加后缀名
-interface UrlObj extends URL {
-    ext?: string;
-};
-
 
 // 字体
 // svg使用场景比较灵活，可能作为一种字体格式，也可能当做图片使用

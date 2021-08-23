@@ -19,6 +19,7 @@ module.exports = {
         // 'node': true
     },
     rules: {
+        'no-unreachable-loop': 'off',
         'no-console': ['error', {allow: ['warn', 'error']}],
         'import/no-commonjs': 'off',
         'import/unambiguous': 'off',
@@ -32,5 +33,7 @@ module.exports = {
         '@typescript-eslint/prefer-includes': 'off',
         // 字符串ends-with ，在浏览器需要polyfill，少用
         '@typescript-eslint/prefer-string-starts-ends-with': 'off',
+        '@typescript-eslint/prefer-regexp-exec': 'off',
+        '@typescript-eslint/restrict-plus-operands': 'off',
     }
 };
