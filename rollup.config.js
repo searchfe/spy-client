@@ -198,4 +198,27 @@ export default [
         },
         plugins: genPlugins({isMin: true, head: true}),
     },
+
+    // *********************
+    // spy-local-cache
+    // *********************
+    // 头部JS，iife风格全兼容
+    {
+        input: 'src/spy-local-cache.ts',
+        output: {
+            file: 'dist/spy-local-cache.js',
+            format: 'umd',
+            name: '__spyLocalCache',
+        },
+        plugins: genPlugins({head: true}),
+    },
+    {
+        input: 'src/spy-local-cache.ts',
+        output: {
+            file: 'dist/spy-local-cache.min.js',
+            format: 'umd',
+            name: '__spyLocalCache',
+        },
+        plugins: genPlugins({isMin: true, head: true}),
+    },
 ];
