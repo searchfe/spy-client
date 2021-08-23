@@ -8,7 +8,7 @@ import {
     SpyHeadConf,
     ErrorConf,
 } from '../lib/spyHeadInterface';
-import {getUrlInfo} from '../lib/util';
+import {getUrlInfo, getxpath} from '../lib/util';
 
 import spyHead from './base';
 
@@ -20,24 +20,6 @@ export function init(conf: SpyHeadConf) {
 
     const winerrors = spyHead.winerrors;
     let resourceErrorCount = 0;
-
-    function getxpath(el: HTMLElement) {
-        const xpath = [];
-        while (el && el.nodeType === 1 && el !== el.parentNode) {
-            let t = el.tagName.toLowerCase();
-            if (el.classList && el.classList.length && el.classList[0]) {
-                t += '[.' + el.classList[0] + ']';
-            }
-            xpath.push(t);
-            if (el === document.body) {
-                break;
-            }
-            el = el.parentNode as HTMLElement; // 修复缺陷检查
-        }
-        return {
-            xpath: xpath.join('<'),
-        };
-    }
 
     function spyListenError(event: Event) {
         try {

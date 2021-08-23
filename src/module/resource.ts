@@ -7,7 +7,7 @@ import {
     SlowOption,
     ResourceHostMetric
 } from '../lib/interface';
-import {getUrlInfo, URLINFO, assign, getResTiming} from '../lib/util';
+import {getUrlInfo, URLINFO, assign, getResTiming, getxpath} from '../lib/util';
 
 
 // URL拓展
@@ -42,28 +42,6 @@ function ignorePath(url: string, paths: string[]) {
         }
     }
     return false;
-}
-
-function getxpath(el: Element | null) {
-    if (!el) {
-        return {xpath: ''};
-    }
-    const xpath = [];
-    while (el && el.nodeType === 1 && el !== el.parentNode) {
-        let t = el.tagName.toLowerCase();
-        if (el.classList && el.classList.length && el.classList[0]) {
-            t += '[.' + el.classList[0] + ']';
-        }
-        xpath.push(t);
-
-        if (el === document.body) {
-            break;
-        }
-        el = el.parentNode as Element; // 修复缺陷检查
-    }
-    return {
-        xpath: xpath.join('<'),
-    };
 }
 
 function f(n: number): number {

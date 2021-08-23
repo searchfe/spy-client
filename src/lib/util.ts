@@ -73,3 +73,29 @@ export function getResTiming(t: PerformanceTiming | PerformanceResourceTiming) {
         res: f(t.responseEnd - t.responseStart),
     };
 }
+
+
+export function getxpath(el: Element | null) {
+    if (!el) {
+        return {xpath: ''};
+    }
+
+    const xpath = [];
+    while (el && el.nodeType === 1 && el !== el.parentNode) {
+        let t = el.tagName.toLowerCase();
+        if (el.getAttribute('id')) {
+            t += '[#' + el.getAttribute('id') + ']';
+        }
+        else if (el.classList && el.classList.length) {
+            t += '[.' + el.classList[el.classList.length - 1] + ']';
+        }
+        xpath.push(t);
+        if (el === document.body) {
+            break;
+        }
+        el = el.parentNode as HTMLElement; // 修复缺陷检查
+    }
+    return {
+        xpath: xpath.join('<'),
+    };
+}
