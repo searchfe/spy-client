@@ -98,21 +98,22 @@ function getHuffmanCodes(root: any) {
     if (root == null) {
         return null;
     }
-    //生成赫夫曼树对应的赫夫曼编码表
-    //思路
-    //1.将赫夫曼编码表存放在map里面
-    //2.在生成赫夫曼编码表时，需要拼接路径，定义一个数组string,存储某个叶子节点的路径
+    // 生成赫夫曼树对应的赫夫曼编码表
+    // 思路
+    // 1.将赫夫曼编码表存放在map里面
+    // 2.在生成赫夫曼编码表时，需要拼接路径，定义一个数组string,存储某个叶子节点的路径
 
     let huffmanCodes: any = {};
     let strings: any[] = [];
+
     /**
      * 将传入的node节点的所有叶子节点的赫夫曼编码得到，并放入到huffmanCodes集合中
      * @param {传入节点} node
      * @param {路径：左子节点是0，右子节点是1} code
      * @param {用于拼接路径} string
      */
-    function getCodes(node: HuffmanNode, code: string, strs: any[]) {
-        let string2 = [...strs];
+    function getCodes(node: HuffmanNode, code: string, strs: string[]) {
+        let string2 = ([] as string[]).concat(strs);
         // 将code加入到string中
         string2.push(code);
         if (node != null) { // 如果node == null不处理
@@ -150,7 +151,7 @@ function zip(bytes: Array<number>, huffmanCodes: any) {
     return string;
 }
 
-function huffstringToByte(strs: Array<string>) {
+function huffStringToByte(strs: Array<string>) {
     //计算赫夫曼编码字符串的长度
     let str = strs.join('');
     let len = Math.ceil(str.length / 8);
@@ -186,7 +187,7 @@ function huffmanZip(bytes: Array<any>) {
     let hufumanCodes = getHuffmanCodes(root);
     // 4.根据生成的赫夫曼编码生成压缩后的赫夫曼编码字节数组
     let hufumanStrArr = zip(bytes, hufumanCodes);
-    let hufumanByteArr = huffstringToByte(hufumanStrArr);
+    let hufumanByteArr = huffStringToByte(hufumanStrArr);
 
     return {result: hufumanByteArr, codes: hufumanCodes};
 }
@@ -202,7 +203,7 @@ function huffmanZip(bytes: Array<any>) {
  * @param {传入的byte} byte
  * @returns 是byte对应的二进制字符串
  */
-function heffmanByteToString(flag: boolean, byte: number) {
+function huffByteToString(flag: boolean, byte: number) {
     //如果是
     if (flag) {
         byte |= 256;
@@ -222,36 +223,38 @@ function heffmanByteToString(flag: boolean, byte: number) {
  * @param {赫夫曼编码得到的二进制数组} huffmanBytes
  */
 function decode(huffmanCodes: {[key:string]: string}, huffmanBytes: Array<number>) {
-    //1.先得到二进制字符串 形式11001111111011......
+    // 1.先得到二进制字符串 形式11001111111011......
     let heffmanStrArr = [];
     for (let i = 0; i < huffmanBytes.length - 1; i++) {
         //判断是不是最后一个字节
         let flag = (i !== huffmanBytes.length - 2);
-        heffmanStrArr.push(heffmanByteToString(flag, huffmanBytes[i]))
+        heffmanStrArr.push(huffByteToString(flag, huffmanBytes[i]))
     }
-    //最后一位记录的是最后一位二进制字符串的长度，该长度主要用于补足最后一位丢失的0,所以要单独处理，
+    // 最后一位记录的是最后一位二进制字符串的长度，该长度主要用于补足最后一位丢失的0,所以要单独处理，
     let lastByteStr = heffmanStrArr[heffmanStrArr.length - 1];
     let lastByteLength = huffmanBytes[huffmanBytes.length - 1];
     lastByteStr = '00000000'.substring(8 - (lastByteLength - lastByteStr.length)) + lastByteStr;
     heffmanStrArr[heffmanStrArr.length - 1] = lastByteStr;
 
-    //把赫夫曼编码表进行调换
+    // 把赫夫曼编码表进行调换
     let map: {[key:string]: string} = {};
     for (const [key, value] of Object.entries(huffmanCodes)) {
         map[value] = key;
     }
-
     let heffmanStr = heffmanStrArr.join('');
     let list = [];
-    //
-    for (let i = 0; i < heffmanStr.length;) {
+    let len = heffmanStr.length;
+    for (let i = 0; i < len;) {
         let count = 1;
         let flag = true;
         let b: string | null = null;
-        while (flag) {
-            //取出一个1或0
-            //i不动，count移动，直到匹配到一个字符
+        while (flag && i + count <= len) {
+            // 取出一个1或0
+            // i不动，count移动，直到匹配到一个字符
             let key = heffmanStr.substring(i, i + count);
+            if (key === '') {
+                break;
+            }
             b = map[key];
             if (!b) {//没有匹配到
                 count++;
@@ -271,52 +274,19 @@ function decode(huffmanCodes: {[key:string]: string}, huffmanBytes: Array<number
 
 // js byte[] 和string 相互转换 UTF-8
 function stringToByte(str: string): Array<number> {
-    var bytes = new Array();
-    var len, c;
-    len = str.length;
-    for (var i = 0; i < len; i++) {
-        c = str.charCodeAt(i);
-        if (c >= 0x010000 && c <= 0x10FFFF) {
-            bytes.push(((c >> 18) & 0x07) | 0xF0);
-            bytes.push(((c >> 12) & 0x3F) | 0x80);
-            bytes.push(((c >> 6) & 0x3F) | 0x80);
-            bytes.push((c & 0x3F) | 0x80);
-        } else if (c >= 0x000800 && c <= 0x00FFFF) {
-            bytes.push(((c >> 12) & 0x0F) | 0xE0);
-            bytes.push(((c >> 6) & 0x3F) | 0x80);
-            bytes.push((c & 0x3F) | 0x80);
-        } else if (c >= 0x000080 && c <= 0x0007FF) {
-            bytes.push(((c >> 6) & 0x1F) | 0xC0);
-            bytes.push((c & 0x3F) | 0x80);
-        } else {
-            bytes.push(c & 0xFF);
-        }
+    let bytes = [];
+    for (let index = 0; index < str.length; index++) {
+        bytes.push(str.charCodeAt(index));
     }
     return bytes;
 }
 
 function byteToString(arr: Array<number>): string {
-    if (typeof arr === 'string') {
-        return arr;
+    let data = '';
+    for (const code of arr) {
+        data += String.fromCharCode(code);
     }
-    var str = '',
-        _arr = arr;
-    for (var i = 0; i < _arr.length; i++) {
-        var one = _arr[i].toString(2),
-            v = one.match(/^1+?(?=0)/);
-        if (v && one.length == 8) {
-            var bytesLength = v[0].length;
-            var store = _arr[i].toString(2).slice(7 - bytesLength);
-            for (var st = 1; st < bytesLength; st++) {
-                store += _arr[st + i].toString(2).slice(2);
-            }
-            str += String.fromCharCode(parseInt(store, 2));
-            i += bytesLength - 1;
-        } else {
-            str += String.fromCharCode(_arr[i]);
-        }
-    }
-    return str;
+    return data;
 }
 
 export function huffmanEncode(str: string) {
@@ -329,46 +299,28 @@ export function huffmanEncode(str: string) {
 }
 
 export function huffmanDecode(codes: any, str: string) {
-    let hufumanByteArr = stringToByte(str);
-    const oriByte = decode(codes, hufumanByteArr);
-    return byteToString(oriByte);
+    let bytes = stringToByte(str);
+    const data = decode(codes, bytes);
+    return byteToString(data);
 }
 
-// let content = 'i like like like java do you like a java';
+// For test
+let content = JSON.stringify({
+    type: 3,
+    fm: 'disp',
+    data: [{"base":{"size":{"doc":{"w":360,"h":4875},"wind":{"w":360,"h":640},"scr":{"w":360,"h":640}},"vsb":"visible","num":16},"t":1629773746698,"path":"/s"}],
+    qid: 10991431029479106376,
+    did: '8dd09c47c7bc90c9fd7274f0ad2c581e',
+    q: '刘德华',
+    t: 1629773746698
+});
 
-// let bytes = stringToByte(content);
-// let nodes = getNodes(bytes);
-// let root = createHuffmanTree(nodes) as HuffmanNode;
-// // console.log('根节点：', root);
-// let list: any = [];
-// root.preOrder(list);
-// // console.log('前序遍历：', list);
+console.log('压缩前的字符串', content, '其长度:', content.length);
 
-// console.log('content长度', content.length);
-// console.log('bytes长度', bytes, atob(content), atob(content).length);
+const res = huffmanEncode(content);
+console.log('压缩后的字符串长度', res.result.length);
+console.log('压缩后的字符串', res.result);
 
-
-// // 测试
-// let hufumanCodes = getHuffmanCodes(root);
-// console.log('生成的赫夫曼编码表：', hufumanCodes);
-
-// // 生成赫夫曼编码字符串
-// let hufumanStrArr = zip(bytes, hufumanCodes);
-// console.log('赫夫曼编码字符串：', hufumanStrArr.join(''))
-// console.log('赫夫曼编码字符串的长度：', hufumanStrArr.join('').length)//应该是133
-
-// // 将生成赫夫曼编码字符串转成字节数组, 要发送的数组
-// let hufumanByteArr = huffstringToByte(hufumanStrArr);//长度为17
-// console.log('压缩后的字节数组', hufumanByteArr);
-// console.log('压缩率：', (bytes.length - hufumanByteArr.length) / bytes.length * 100 + '%');
-
-// // 测试封装后的方法
-// console.log('压缩后的字节数组', huffmanZip(bytes));
-
-// // 测试解码
-// console.log('解码后的的：', decode(hufumanCodes, hufumanByteArr));
-// console.log('原字符数组：', bytes);
-// console.log('解码后字符串：', byteToString(decode(hufumanCodes, hufumanByteArr)));
-// console.log('原先的字符串：', byteToString(bytes));
-// console.log('原先的字符串：', byteToString(hufumanByteArr).length);
-// console.log('原先的字符串：', stringToByte(byteToString(hufumanByteArr)));
+const out = huffmanDecode(res.codes, res.result);
+console.log('解压后的字符串', out, '其长度:', out.length);
+console.log('解压后的数据', JSON.stringify(JSON.parse(out)));

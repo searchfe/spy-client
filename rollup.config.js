@@ -208,7 +208,7 @@ export default [
         output: {
             file: 'dist/spy-local-cache.js',
             format: 'umd',
-            name: '__spyLocalCache',
+            name: 'SpyLocalCache',
         },
         plugins: genPlugins({head: true}),
     },
@@ -217,7 +217,7 @@ export default [
         output: {
             file: 'dist/spy-local-cache.min.js',
             format: 'umd',
-            name: '__spyLocalCache',
+            name: 'SpyLocalCache',
         },
         plugins: genPlugins({isMin: true, head: true}),
     },
