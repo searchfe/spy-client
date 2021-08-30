@@ -17,13 +17,13 @@ CDN方式
 
 ```html
 <!--增强版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.0.7/dist/spy-client.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.0/dist/spy-client.min.js" type="text/javascript"></script>
 
 <!--增强版SDK spy-head-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.0.7/dist/spy-head.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.0/dist/spy-head.min.js" type="text/javascript"></script>
 
 <!--基础版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.0.7/dist/spy-client-basic.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.0/dist/spy-client-basic.min.js" type="text/javascript"></script>
 
 ```
 
@@ -111,7 +111,7 @@ spy.sendPerf({
 spy.sendExcept({
     // 必须, 异常信息，msg字段是必须的，是异常唯一标识。其他字段作为补充信息，由用户自定义
     info: {
-        msg: 'abc is not undefined',
+        msg: 'abc is not undefined', // msg字段是必须的，必须的，必须的，会统计相同msg的总量
         stack: 'xxxxx',
         file: 'xxxxxxx'
     },
@@ -150,7 +150,7 @@ spy.sendExceptForError(new Error('error'), {
     }
 });
 
-// 最基础的API需要自行指定type字段
+// 最基础的API，需要自行指定type字段
 spy.send({
     type: 'perf'
     info: {
@@ -190,18 +190,18 @@ spy.clearAllMark(); // 清除所有mark的信息
 
 2. spy-client：此部分提供了丰富的性能和异常的指标统计，其中部分功能依赖于spy-head，包含的功能有
     * 性能指标采集：包含体积、卡顿、速度等60+个性能指标采集方法
-    * 异常：包含大于100K的大图片采集、HTTPS环境下HTTP资源采集
+    * 异常：包含大于150K的大图片采集、HTTPS环境下HTTP资源采集
     * 辅助方式： mark系列辅助方法
 
 ### spy-head使用
 
-spy-head JS可以视情况script内联或嵌入其他JS里
+spy-head JS可以视情况通过script内联或嵌入其他JS里
 
 > 如果要启用一项异常监控功能，需要设置其抽样sample不为0
 
 ```html
 <script>
-// spy-head js可以视情况script内联或外链，外链地址可见文档开头的CDN
+// spy-head js可以视情况通过script内联或外链，外链地址可见文档开头的CDN
 const spyHead = require('spy-client/dist/spy-head');
 spyHead.init({
     pid: '1_1', // spy申请的pid
@@ -267,7 +267,7 @@ spyHead.init({
 ### 主体SDK spy-client
 
 ```javascript
-// enhanced spy-client 全集功能用法
+// enhanced spy-client
 const SpyClient = require('spy-client');
 const spy = new SpyClient({
     pid: '1_1000', // 必须
@@ -407,10 +407,13 @@ export interface TTIMetric {
 
 ```javascript
 // 数据类型：性能，触发时间：500MsAfterOnLoad
-spy.listenResource(function (metric) {
+spy.listenResource(function (metric, hostMetric) {
     spy.sendPerf({
         info: metric
     });
+
+    // 分域名进行统计的
+    console.log('hostMetric', hostMetric);
 });
 ```
 
@@ -452,7 +455,67 @@ export interface ResourceMetric {
     cssCacheRate: number;
     imgCacheRate: number;
 };
+
 ```
+
+hostMetric定义
+```typescript
+export interface ResourceHostMetric {
+    [host: string]: {
+        hostNum: number;
+        hostSize: number;
+        hostTransferSize: number;
+        hostDuration: number;
+        hostCacheRate: number;
+    };
+};
+```
+
+#### 加载慢的资源
+
+```javascript
+// 数据类型：异常，触发时间：500MsAfterOnLoad
+spy.listenSlowResource(function (info) {
+    spy.sendExcept({
+        info: info
+    });
+}, {threshold: 1000});
+```
+
+info定义
+```typescript
+export interface ResourceErrorInfo {
+    // 发生异常的资源链接
+    msg: string;
+    // 发生异常的资源元素的xpath信息，一直到body
+    xpath: string;
+    // 资源host
+    host: string;
+    // 资源类型
+    type: string;
+    // 资源耗时
+    dur?: number;
+}
+```
+
+第二个参数，option定义
+```typescript
+export interface SlowOption {
+    /**
+     * 加载时长大于该阈值，就认为是慢资源，默认1000，单位是ms
+     */
+    threshold?: number;
+    /**
+     * 忽略指定path的资源
+     */
+    ignorePaths?: string[];
+    /**
+     * 触发时机，在load事件触发后，还是在用户离开页面后，收集出现的加载慢的资源。，默认是load
+     */
+    trigger?: 'load' | 'leave';
+}
+```
+
 
 #### 大于150KB的大图检测
 大于150KB（默认，第二个参数可以修改）的来自img标签的大图检测。
@@ -473,6 +536,31 @@ export interface ResourceErrorInfo {
     msg: string;
     // 发生异常的资源元素的xpath信息，一直到body
     xpath: string;
+    // 资源host
+    host: string;
+    // 资源类型
+    type: string;
+    // 资源耗时
+    dur?: number;
+}
+```
+
+
+第二个参数，option定义
+```typescript
+export interface BigImgOption {
+    /**
+     * 体积大于该阈值，就认为是大图，默认150，单位是kb
+     */
+    maxSize?: number;
+    /**
+     * 忽略指定path的资源
+     */
+    ignorePaths?: string[];
+    /**
+     * 触发时机，在load事件触发后，还是在用户离开页面后，收集出现的加载慢的资源。，默认是load
+     */
+    trigger?: 'load' | 'leave';
 }
 ```
 
@@ -495,6 +583,27 @@ export interface ResourceErrorInfo {
     msg: string;
     // 发生异常的资源元素的xpath信息，一直到body
     xpath: string;
+    // 资源host
+    host: string;
+    // 资源类型
+    type: string;
+    // 资源耗时
+    dur?: number;
+}
+```
+
+
+第二个参数，option定义
+```typescript
+export interface HttpResOption {
+    /**
+     * 忽略指定path的资源
+     */
+    ignorePaths?: string[];
+    /**
+     * 触发时机，在load事件触发后，还是在用户离开页面后，收集出现的加载慢的资源。，默认是load
+     */
+    trigger?: 'load' | 'leave';
 }
 ```
 
