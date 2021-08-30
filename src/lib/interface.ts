@@ -283,19 +283,43 @@ export interface ResOption {
 }
 
 export interface BigImgOption {
+    /**
+     * 体积大于该阈值，就认为是大图，默认150，单位是kb
+     */
     maxSize?: number;
+    /**
+     * 忽略指定path的资源
+     */
     ignorePaths?: string[];
+    /**
+     * 触发时机，在load事件触发后，还是在用户离开页面后，收集出现的加载慢的资源。，默认是load
+     */
     trigger?: 'load' | 'leave';
 }
 
 export interface HttpResOption {
+    /**
+     * 忽略指定path的资源
+     */
     ignorePaths?: string[];
+    /**
+     * 触发时机，在load事件触发后，还是在用户离开页面后，收集出现的加载慢的资源。，默认是load
+     */
     trigger?: 'load' | 'leave';
 }
 
 export interface SlowOption {
+    /**
+     * 加载时长大于该阈值，就认为是慢资源，默认1000，单位是ms
+     */
     threshold?: number;
+    /**
+     * 忽略指定path的资源
+     */
     ignorePaths?: string[];
+    /**
+     * 触发时机，在load事件触发后，还是在用户离开页面后，收集出现的加载慢的资源。，默认是load
+     */
     trigger?: 'load' | 'leave';
 }
 
