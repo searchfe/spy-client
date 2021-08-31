@@ -6,6 +6,7 @@
 ## 安装
 
 新版2.x部分API不再兼容1.x
+从2.1.0版本开始，不再兼容IE8及以下IE浏览器
 
 ```
 npm install spy-client --save
