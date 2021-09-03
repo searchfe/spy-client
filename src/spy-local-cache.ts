@@ -18,7 +18,7 @@ class Storage {
 
 class LS extends Storage {
     static isSupport() {
-        return !!window.indexedDB;
+        return !!window.localStorage;
     }
 
     set(key: string, value: any) {
@@ -206,9 +206,7 @@ export default class SpyLocalCache {
             key: 'SpyLocalCache',
             interval: 500,
             onFlush: () => {},
-            storage: IndexedDB.isSupport()
-                ? 'indexedDB'
-                : LS.isSupport()
+            storage: LS.isSupport()
                     ? 'localstorage'
                     : 'empty',
         }, option);
