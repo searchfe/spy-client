@@ -1,5 +1,15 @@
 import {huffmanEncode, huffmanDecode} from './lib/huffman';
 
+interface Option {
+    defaultTrigger: boolean;
+    compress: 'huffman' | 'lzw' | 'no';
+    key: string;
+    maxRecordLen: number;
+    interval: number;
+    onFlush: (res: any) => void;
+    storage: 'indexedDB' | 'localstorage' | 'empty';
+}
+
 class Storage {
     static isSupport: () => boolean;
 
@@ -195,7 +205,7 @@ function lzw(text: string, deCompress = false) {
 
 
 export default class SpyLocalCache {
-    private option: any;
+    private readonly option: Option;
     private storage: Storage;
     private timer: ReturnType<typeof setTimeout>;
     private tmpList: string[] = [];
@@ -205,8 +215,11 @@ export default class SpyLocalCache {
             compress: 'lzw', // huffman lzw no
             key: 'SpyLocalCache',
             interval: 500,
+            maxRecordLen: 30,
             onFlush: () => {},
-            storage: LS.isSupport()
+            storage: IndexedDB.isSupport()
+                ? 'indexedDB'
+                : LS.isSupport()
                     ? 'localstorage'
                     : 'empty',
         }, option);
@@ -288,10 +301,11 @@ export default class SpyLocalCache {
 
     save() {
         this.getData((list: any[]) => {
-            let content = list.concat(this.tmpList).join('\n');
-            let startT = Date.now();
+            // 只保留最近的maxRecordLen条日志
+            const reserveLen = this.option.maxRecordLen - 1;
+            const originList = list.length > reserveLen ? list.slice(list.length - reserveLen, list.length) : list;
+            let content = originList.concat(this.tmpList).join('\n');
             let data = this.zip(content);
-            let cost = Date.now() - startT;
             let codesStr = '';
             if (data.codes) {
                 codesStr = JSON.stringify(data.codes);
@@ -302,12 +316,6 @@ export default class SpyLocalCache {
             }
             this.storage.set(this.option.key, data.result);
 
-            let before = content.length;
-            let after = codesStr.length + data.result.length;
-            console.log(content, content.length);
-            console.log(codesStr + data.result, (codesStr + data.result).length);
-            console.log('压缩率', (before - after) * 100 / before, '%');
-            console.log('耗时:', cost);
             this.tmpList = [];
         });
     }

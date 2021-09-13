@@ -305,22 +305,22 @@ export function huffmanDecode(codes: any, str: string) {
 }
 
 // For test
-let content = JSON.stringify({
-    type: 3,
-    fm: 'disp',
-    data: [{"base":{"size":{"doc":{"w":360,"h":4875},"wind":{"w":360,"h":640},"scr":{"w":360,"h":640}},"vsb":"visible","num":16},"t":1629773746698,"path":"/s"}],
-    qid: 10991431029479106376,
-    did: '8dd09c47c7bc90c9fd7274f0ad2c581e',
-    q: '刘德华',
-    t: 1629773746698
-});
+// let content = JSON.stringify({
+//     type: 3,
+//     fm: 'disp',
+//     data: [{"base":{"size":{"doc":{"w":360,"h":4875},"wind":{"w":360,"h":640},"scr":{"w":360,"h":640}},"vsb":"visible","num":16},"t":1629773746698,"path":"/s"}],
+//     qid: 10991431029479106376,
+//     did: '8dd09c47c7bc90c9fd7274f0ad2c581e',
+//     q: '刘德华',
+//     t: 1629773746698
+// });
 
-console.log('压缩前的字符串', content, '其长度:', content.length);
+// console.log('压缩前的字符串', content, '其长度:', content.length);
 
-const res = huffmanEncode(content);
-console.log('压缩后的字符串长度', res.result.length);
-console.log('压缩后的字符串', res.result);
+// const res = huffmanEncode(content);
+// console.log('压缩后的字符串长度', res.result.length);
+// console.log('压缩后的字符串', res.result);
 
-const out = huffmanDecode(res.codes, res.result);
-console.log('解压后的字符串', out, '其长度:', out.length);
-console.log('解压后的数据', JSON.stringify(JSON.parse(out)));
+// const out = huffmanDecode(res.codes, res.result);
+// console.log('解压后的字符串', out, '其长度:', out.length);
+// console.log('解压后的数据', JSON.stringify(JSON.parse(out)));
