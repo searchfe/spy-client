@@ -68,16 +68,78 @@ class LS extends Storage {
 }
 
 class IndexedDB extends Storage {
+    private readonly databaseName = 'spyLC';
+    private db: IDBDatabase | null = null;
+    private readonly setQueue: any[] = [];
+    private readonly getQueue: any[] = [];
+    constructor() {
+        super();
+
+        let request = window.indexedDB.open(this.databaseName);
+
+        request.onupgradeneeded = event => {
+            // @ts-ignore ts默认的EventTarget类型有问题，先ignore掉
+            this.db = event.target && event.target.result;
+            if (this.db && !this.db.objectStoreNames.contains(this.databaseName)) {
+                this.db.createObjectStore(this.databaseName, {keyPath: 'key'});
+            }
+            this.runQueueTask();
+        };
+
+        request.onsuccess = () => {
+            this.db = request.result;
+            this.runQueueTask();
+        };
+
+    }
     static isSupport() {
         return !!window.indexedDB;
     }
 
     set(key: string, value: any) {
+        // 因为indexDB是异步初始化的，如果set的时候未初始化，先缓存之后再执行set
+        if (!this.db) {
+            this.setQueue.push({
+                key,
+                value,
+            });
+            return;
+        }
+        this.db.transaction([this.databaseName], 'readwrite')
+            .objectStore(this.databaseName)
+            .add({
+                key,
+                value,
+            });
 
     }
 
     get(key: string, cb: any) {
+        // 因为indexDB是异步初始化的，如果get的时候未初始化，先缓存之后再执行get
+        if (!this.db) {
+            this.getQueue.push({
+                key,
+                cb,
+            });
+            return;
+        }
+        const transaction = this.db.transaction([this.databaseName]);
+        const objectStore = transaction.objectStore(this.databaseName);
+        const request = objectStore.get(key);
 
+        request.onsuccess = () => {
+            const result = request.result ? request.result : {value: ''};
+            cb(result.value);
+        };
+    }
+
+    private runQueueTask() {
+        this.setQueue.forEach(ele => {
+            this.set(ele.key, ele.value);
+        });
+        this.getQueue.forEach(ele => {
+            this.get(ele.key, ele.cb);
+        });
     }
 }
 
