@@ -136,7 +136,7 @@ export default class Resource implements Module {
 
         if (this.bigImgCB) {
             // 发送大图监控数据
-            if (window.requestIdleCallback && Object.keys(this.bigImgList).length && this.bigImgCB) {
+            if (typeof window.requestIdleCallback === 'function' && Object.keys(this.bigImgList).length) {
                 window.requestIdleCallback(() => {
                     for (const host of Object.keys(this.bigImgList)) {
                         for (const entry of this.bigImgList[host]) {
@@ -163,7 +163,7 @@ export default class Resource implements Module {
 
         if (this.httpResCB) {
             // 发送http资源监控数据
-            if (window.requestIdleCallback && Object.keys(this.httpResList).length && this.httpResCB) {
+            if (typeof window.requestIdleCallback === 'function' && Object.keys(this.httpResList).length) {
                 window.requestIdleCallback(() => {
                     for (const host of Object.keys(this.httpResList)) {
                         for (const entry of this.httpResList[host]) {
@@ -190,7 +190,7 @@ export default class Resource implements Module {
 
         if (this.slowResCB) {
             // 发送慢资源监控数据
-            if (window.requestIdleCallback && Object.keys(this.slowList).length && this.httpResCB) {
+            if (typeof window.requestIdleCallback === 'function' && Object.keys(this.slowList).length) {
                 window.requestIdleCallback(() => {
                     for (const host of Object.keys(this.slowList)) {
                         for (const entry of this.slowList[host]) {

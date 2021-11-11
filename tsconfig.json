@@ -3,7 +3,7 @@
     "compilerOptions": {
         // ts-node does not support any module syntax other than commonjs
         // 生成代码的模块风格是commonjs 、ES6 or es2015、amd、umd、ESNext等风格
-        "module": "ES6",
+        "module": "es2015",
 
         // tsc编译输出的代码的es版本
         "target": "ES5", // 生成的代码是 ES3 ES5 ES6 or ES2015 ES2016 ES2017 ESNEXT

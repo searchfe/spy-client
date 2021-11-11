@@ -1,0 +1,97 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SPY Client Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/dist/spy-head.js"></script>
+    <script>
+        // 配置
+        window.__spyHead && window.__spyHead.init({
+            pid: '1_1000',
+            lid: '',
+            // 数据类型：异常，触发时间：OnLoadResourceError
+            resourceError: {
+                group: 'resource',
+                sample: 1,
+                handler: function (data) {
+
+                }
+            },
+            // 数据类型：异常，触发时间：OnJSError
+            jsError: {
+                group: 'js',
+                sample: 1,
+                handler: function (data) {
+
+                }
+            },
+            // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
+            whiteScreenError: {
+                sample: 1,
+                group: 'whiteScreen',
+                selector: 'body',
+                subSelector: 'button1',
+                timeout: 2000,
+                handler: function (data) {
+
+                }
+            }
+        });
+
+
+    function en(c){
+        var x='charCodeAt',
+        b, e={},
+        f=c.split(""),d=[],a=f[0],g=256;for(b=1;b<f.length;b++)c=f[b],null!=e[a+c]?a+=c:(d.push(1<a.length?e[a]:a[x](0)),e[a+c]=g,g++,a=c);d.push(1<a.length?e[a]:a[x](0));for(b=0;b<d.length;b++)d[b]=String.fromCharCode(d[b]);return d.join("")}
+
+    function de(b){var a,e={},d=b.split(""),c=f=d[0],g=[c],h=o=256;for(b=1;b<d.length;b++)a=d[b].charCodeAt(0),a=h>a?d[b]:e[a]?e[a]:f+c,g.push(a),c=a.charAt(0),e[o]=f+c,o++,f=a;return g.join("")}
+
+    </script>
+</head>
+<body>
+    <!-- <div style="height: 667px;"> -->
+    <div id="main">
+        <div>open</div>
+
+        <p>
+            TypeScriptJavaScriptJavaScript 的超集用于解决大型项目的代码复杂性一种脚本语言，用于创建动态网页。可以在编译期间发现并纠正错误作为一种解释型语言，只能在运行时发现错误强类型，支持静态和动态类型弱类型，没有静态类型选项最终被编译成 JavaScript 代码，使浏览器可以理解可以直接在浏览器中使用支持模块、泛型和接口不支持模块，泛型或接口支持 ES3，ES4，ES5 和 ES6 等不支持编译其他 ES3，ES4，ES5 或 ES6 功能社区的支持仍在增长，而且还不是很大大量的社区支持以及大量文档和解决问题的支持
+        </p>
+
+    </div>
+    <script src="https://mss0.bdstatic.com/se/static/js/iphone/zbios/zbiosT_f69.js"></script>
+    <script src="/dist/spy-local-cache.js"></script>
+
+<script type="text/javascript">
+const localCache = new SpyLocalCache({
+    storage: 'localstorage',
+    // compress: 'huffman',
+    // compress: 'no',
+    compress: 'lzw',
+    onFlush(list) {
+        console.log('flushed list', list);
+    },
+});
+
+// 当有22条如下日志时
+// lzw 压缩率 68%，耗时 2ms
+// huffman压缩率 21% ,耗时2ms
+localCache.addLog({
+    type: 'perf',
+    info: {
+        res: 200,
+    },
+});
+
+localCache.addLog({
+    type: 3,
+    fm: 'disp',
+    data: [{"base":{"size":{"doc":{"w":360,"h":4875},"wind":{"w":360,"h":640},"scr":{"w":360,"h":640}},"vsb":"visible","num":16},"t":1629773746698,"path":"/s"}],
+    qid: 10991431029479106376,
+    did: '8dd09c47c7bc90c9fd7274f0ad2c581e',
+    q: '刘德华',
+    t: 1629773746698
+});
+</script>
+</body>
+</html>

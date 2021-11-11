@@ -1,6 +1,6 @@
 {
   "name": "spy-client",
-  "version": "2.1.0",
+  "version": "2.1.1-alpha.0",
   "description": "spy client",
   "main": "dist/spy-client.js",
   "module": "dist/spy-client.esm.js",
@@ -50,6 +50,8 @@
     "eslint": "^6.8.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-import": "^2.24.1",
+    "fastify": "^3.21.0",
+    "fastify-cors": "^6.0.2",
     "fecs": "^1.6.4",
     "file-loader": "^4.1.0",
     "jasmine-core": "^3.4.0",
