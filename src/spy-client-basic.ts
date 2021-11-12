@@ -69,7 +69,9 @@ interface ErrorOption {
 
 const defaultLogServer = 'https://sp1.baidu.com/5b1ZeDe5KgQFm2e88IuM_a/mwb2.gif?';
 
-const isIos = /(iPhone|iPod|iPad)/.test(navigator.userAgent);
+const ver = navigator.userAgent.toLowerCase().match(/cpu iphone os (.*?)_/);
+const isLtIos14 = ver && ver[2] && (+ver[2] < 14);
+
 
 function err(msg: string) {
     console.error(`[SpyClient_log]${msg}`);
@@ -89,6 +91,10 @@ function stringify(obj: any) {
 
         return encodeURIComponent(key) + '=' + encodeURIComponent(value);
     }).join('&');
+}
+
+function isArray(arr: any) {
+    return Object.prototype.toString.call(arr) === '[object Array]';
 }
 
 interface SpyClientInnerOption extends SpyClientOption {
@@ -117,14 +123,48 @@ export default class SpyClient {
         };
     }
 
-    send(query: any) {
-        if (!this.check(query)) {
+    fetch(url: string, data: any) {
+        if (!window.fetch) {
+            return;
+        }
+        fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+        　　　　'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+    }
+
+    sendPost(data: any) {
+        let logItems: any[] = isArray(data) ? data : [data];
+        const first = logItems[0];
+        // 需要在页面暴漏出来pid等基本信息，方式调试查看基本信息与兼容目前的监控
+        const query = {
+            pid: first.pid,
+            type: first.type,
+            group: first.group,
+        };
+        const url = this.option.logServer + stringify(query);
+
+        if (!(
+            !isLtIos14
+            && navigator.sendBeacon
+            && navigator.sendBeacon(url, JSON.stringify(data))
+        )) {
+            this.fetch(url, data);
+        }
+    }
+
+    handle(logItem: any) {
+        if (!this.check(logItem)) {
             return;
         }
 
         // 当前api设置了抽样，
-        if (typeof query.sample === 'number') {
-            if (Math.random() > query.sample) {
+        if (typeof logItem.sample === 'number') {
+            if (Math.random() > logItem.sample) {
                 return;
             }
         }
@@ -132,30 +172,54 @@ export default class SpyClient {
             return;
         }
 
-        query = assign(
+        logItem = assign(
             {
                 pid: this.option.pid,
                 lid: this.option.lid,
                 ts: Date.now(),
                 group: 'common',
             },
-            query
+            logItem
         );
 
-        delete query.sample;
+        delete logItem.sample;
+        return logItem;
+    }
 
-        const url = this.option.logServer + stringify(query);
+    send(data: any, post = false) {
+        let logItems: any[] = isArray(data) ? data : [data];
 
-        // 目前服务器端支持sendBeacon的post请求，可以优先采用，该api可以降低打点丢失率
-        // 但是ios有些问题：在webkit浏览内核环境下，beacon requests的请求方式存在证书验证的bug.
-        // 修复说明在如下链接中：https://bugs.webkit.org/show_bug.cgi?id=193508
-        // 但是目前为止，在iOS12.2版本中该问题依旧存在
-        if (!(
-            !isIos
-            && navigator.sendBeacon
-            && navigator.sendBeacon(url)
-        )) {
-            (new Image()).src = url;
+        let postData = [];
+        for (let logItem of logItems) {
+            logItem = this.handle(logItem);
+            if (!logItem) {
+                continue;
+            }
+
+            postData.push(logItem);
+
+            // 期望通过post方式上传日志
+            if (post) {
+                continue;
+            }
+
+            const url = this.option.logServer + stringify(logItem);
+
+            // 目前服务器端支持sendBeacon的post请求，可以优先采用，该api可以降低打点丢失率
+            // 但是ios有些问题：在webkit浏览内核环境下，beacon requests的请求方式存在证书验证的bug，发送失败但返回正确.
+            // 修复说明在如下链接中：https://bugs.webkit.org/show_bug.cgi?id=193508
+            // 但是目前为止，在iOS12.2版本中该问题依旧存在
+            // 2021-11-11： 发现ios 14可以送，故小于14的不发送
+            if (!(
+                !isLtIos14
+                && navigator.sendBeacon
+                && navigator.sendBeacon(url)
+            )) {
+                (new Image()).src = url;
+            }
+        }
+        if (post) {
+            this.sendPost(postData);
         }
     }
 

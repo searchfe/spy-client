@@ -7,6 +7,7 @@ interface Option {
     maxRecordLen: number;
     interval: number;
     onFlush: (res: any) => void;
+    onSave: (res: any) => void;
     storage: 'indexedDB' | 'localstorage' | 'empty';
 }
 
@@ -279,6 +280,7 @@ export default class SpyLocalCache {
             interval: 500,
             maxRecordLen: 30,
             onFlush: () => {},
+            onSave: () => {},
             storage: IndexedDB.isSupport()
                 ? 'indexedDB'
                 : LS.isSupport()
@@ -362,23 +364,42 @@ export default class SpyLocalCache {
     }
 
     save() {
+        const st = Date.now();
         this.getData((list: any[]) => {
             // 只保留最近的maxRecordLen条日志
             const reserveLen = this.option.maxRecordLen - 1;
             const originList = list.length > reserveLen ? list.slice(list.length - reserveLen, list.length) : list;
-            let content = originList.concat(this.tmpList).join('\n');
-            let data = this.zip(content);
-            let codesStr = '';
-            if (data.codes) {
-                codesStr = JSON.stringify(data.codes);
-                this.storage.set(this.option.key + 'Codes', codesStr);
+            let newList = originList.concat(this.tmpList);
+            let content = newList.join('\n');
+            let error: Error | null = null;
+            let len = 0;
+            try {
+                let data = this.zip(content);
+                let codesStr = '';
+                if (data.codes) {
+                    codesStr = JSON.stringify(data.codes);
+                    this.storage.set(this.option.key + 'Codes', codesStr);
+                }
+                else {
+                    this.storage.rm(this.option.key + 'Codes');
+                }
+
+                this.storage.set(this.option.key, data.result);
+                len = data.result.length;
             }
-            else {
-                this.storage.rm(this.option.key + 'Codes');
+            catch (e) {
+                error = e;
+                console.error(e);
             }
-            this.storage.set(this.option.key, data.result);
 
             this.tmpList = [];
+
+            this.option.onSave && this.option.onSave({
+                cost: Date.now() -  st,
+                length: len / 1024,
+                list: newList,
+                error: error,
+            });
         });
     }
 
