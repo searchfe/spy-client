@@ -1,6 +1,6 @@
 {
   "name": "spy-client",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "spy client",
   "main": "dist/spy-client.js",
   "module": "dist/spy-client.esm.js",
