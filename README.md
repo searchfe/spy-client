@@ -18,13 +18,13 @@ CDN方式
 
 ```html
 <!--增强版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.0/dist/spy-client.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.3/dist/spy-client.min.js" type="text/javascript"></script>
 
 <!--增强版SDK spy-head-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.0/dist/spy-head.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.3/dist/spy-head.min.js" type="text/javascript"></script>
 
 <!--基础版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.0/dist/spy-client-basic.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.3/dist/spy-client-basic.min.js" type="text/javascript"></script>
 
 ```
 
@@ -888,5 +888,7 @@ npm run dev
 # 发布npm包
 npm run release_pre
 npm run release
+
+# 修改文档等，把代码push
 npm run release_post
 ```
