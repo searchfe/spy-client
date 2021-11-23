@@ -46,16 +46,17 @@ class HuffmanNode {
  * @param {接受字符数组} bytes
  * @return 返回的就是list形式
  */
-function getNodes(bytes: Array<any>): HuffmanNode[] {
-    //创建一个list
+function getNodes(bytes: any[]): HuffmanNode[] {
+    // 创建一个list
     let list: HuffmanNode[] = [];
-    //counts 统计每一个byte出现的次数
+    // counts 统计每一个byte出现的次数
     let counts: any = {};
     for (let b of bytes) {
         let count = counts[b]; // map还没有这个字符数据
         if (count == null) {
             counts[b] = 1;
-        } else {
+        }
+        else {
             counts[b]++;
         }
     }
@@ -84,7 +85,7 @@ function createHuffmanTree(nodes: HuffmanNode[]): HuffmanNode | undefined {
             parent.left = leftNode;
             parent.right = rightNode;
 
-            //将新的二叉树，加入到nodes
+            // 将新的二叉树，加入到nodes
             nodes.unshift(parent);
         }
 
@@ -118,44 +119,45 @@ function getHuffmanCodes(root: any) {
         string2.push(code);
         if (node != null) { // 如果node == null不处理
             // 判断当前node是叶子节点还是非叶子节点
-            if (node.data == null) {//非叶子节点
+            if (node.data == null) { // 非叶子节点
                 // 递归处理
                 // 向左递归
                 getCodes(node.left, '0', string2);
                 // 向右递归
-                getCodes(node.right, '1', string2)
-            } else {//说明是一个叶子节点
+                getCodes(node.right, '1', string2);
+            }
+            else { // 说明是一个叶子节点
                 // 就表示找到了某个叶子节点的最后
                 huffmanCodes[node.data] = string2.join('');
             }
         }
     }
-    getCodes(root, "", strings);
+    getCodes(root, '', strings);
     return huffmanCodes;
 }
 
-//编写一个方法，将字符串对应的bytes数组，通过生成的赫夫曼编码表，返回一个赫夫曼编码压缩后的byte数组
+
 /**
- *
+ * 编写一个方法，将字符串对应的bytes数组，通过生成的赫夫曼编码表，返回一个赫夫曼编码压缩后的byte数组
  * @param {原始的字符串对应的bytes数组} bytes
  * @param {生成的赫夫曼编码表} huffmanCodes
  * @return 返回的是字符串对应的一个byte数组
  */
-function zip(bytes: Array<number>, huffmanCodes: any) {
-    //1.利用huffmanCodes将bytes转成赫夫曼编码对应的字符串
+function zip(bytes: number[], huffmanCodes: any) {
+    // 1.利用huffmanCodes将bytes转成赫夫曼编码对应的字符串
     let string = [];
-    //遍历数组
+    // 遍历数组
     for (let b of bytes) {
         string.push(huffmanCodes[b]);
     }
     return string;
 }
 
-function huffStringToByte(strs: Array<string>) {
-    //计算赫夫曼编码字符串的长度
+function huffStringToByte(strs: string[]) {
+    // 计算赫夫曼编码字符串的长度
     let str = strs.join('');
     let len = Math.ceil(str.length / 8);
-    //创建存储压缩后的byte数组
+    // 创建存储压缩后的byte数组
     let huffmanCodeByte = new Array(len + 1);
     let index = 0;
     let strByte: string = ''; // 记录是第几个byte
@@ -178,7 +180,7 @@ function huffStringToByte(strs: Array<string>) {
  * @returns 是经过赫夫曼编码处理后，压缩后的字节数组
  *
  */
-function huffmanZip(bytes: Array<any>) {
+function huffmanZip(bytes: any[]) {
     // 1.生成节点数组
     let nodes = getNodes(bytes);
     // 2.根据节点数组创建赫夫曼树
@@ -204,31 +206,30 @@ function huffmanZip(bytes: Array<any>) {
  * @returns 是byte对应的二进制字符串
  */
 function huffByteToString(flag: boolean, byte: number) {
-    //如果是
+    // 如果是
     if (flag) {
         byte |= 256;
     }
-    let str = Number(byte).toString(2)
+    let str = Number(byte).toString(2);
     if (flag) {
         return str.substring(str.length - 8);
-    } else {
-        return str;
     }
+    return str;
 }
 
-//编写一份方法，完成对压缩数据的解码
+
 /**
- *
+ * 编写一份方法，完成对压缩数据的解码
  * @param {赫夫曼编码表} huffmanCodes
  * @param {赫夫曼编码得到的二进制数组} huffmanBytes
  */
-function decode(huffmanCodes: {[key:string]: string}, huffmanBytes: Array<number>) {
+function decode(huffmanCodes: {[key: string]: string}, huffmanBytes: number[]) {
     // 1.先得到二进制字符串 形式11001111111011......
     let heffmanStrArr = [];
     for (let i = 0; i < huffmanBytes.length - 1; i++) {
-        //判断是不是最后一个字节
+        // 判断是不是最后一个字节
         let flag = (i !== huffmanBytes.length - 2);
-        heffmanStrArr.push(huffByteToString(flag, huffmanBytes[i]))
+        heffmanStrArr.push(huffByteToString(flag, huffmanBytes[i]));
     }
     // 最后一位记录的是最后一位二进制字符串的长度，该长度主要用于补足最后一位丢失的0,所以要单独处理，
     let lastByteStr = heffmanStrArr[heffmanStrArr.length - 1];
@@ -237,7 +238,7 @@ function decode(huffmanCodes: {[key:string]: string}, huffmanBytes: Array<number
     heffmanStrArr[heffmanStrArr.length - 1] = lastByteStr;
 
     // 把赫夫曼编码表进行调换
-    let map: {[key:string]: string} = {};
+    let map: {[key: string]: string} = {};
     for (const [key, value] of Object.entries(huffmanCodes)) {
         map[value] = key;
     }
@@ -256,14 +257,15 @@ function decode(huffmanCodes: {[key:string]: string}, huffmanBytes: Array<number
                 break;
             }
             b = map[key];
-            if (!b) {//没有匹配到
+            if (!b) { // 没有匹配到
                 count++;
-            } else {
-                //匹配到
+            }
+            else {
+                // 匹配到
                 flag = false;
             }
         }
-        list.push(parseInt(b as string));
+        list.push(parseInt(b as string, 10));
         i += count;
     }
     // 当for循环结束后，list中就存放了所有的字符
@@ -273,7 +275,7 @@ function decode(huffmanCodes: {[key:string]: string}, huffmanBytes: Array<number
 
 
 // js byte[] 和string 相互转换 UTF-8
-function stringToByte(str: string): Array<number> {
+function stringToByte(str: string): number[] {
     let bytes = [];
     for (let index = 0; index < str.length; index++) {
         bytes.push(str.charCodeAt(index));
@@ -281,7 +283,7 @@ function stringToByte(str: string): Array<number> {
     return bytes;
 }
 
-function byteToString(arr: Array<number>): string {
+function byteToString(arr: number[]): string {
     let data = '';
     for (const code of arr) {
         data += String.fromCharCode(code);
@@ -294,7 +296,7 @@ export function huffmanEncode(str: string) {
     let {result, codes} = huffmanZip(bytes);
     return {
         codes,
-        result: byteToString(result)
+        result: byteToString(result),
     };
 }
 
@@ -303,24 +305,3 @@ export function huffmanDecode(codes: any, str: string) {
     const data = decode(codes, bytes);
     return byteToString(data);
 }
-
-// For test
-// let content = JSON.stringify({
-//     type: 3,
-//     fm: 'disp',
-//     data: [{"base":{"size":{"doc":{"w":360,"h":4875},"wind":{"w":360,"h":640},"scr":{"w":360,"h":640}},"vsb":"visible","num":16},"t":1629773746698,"path":"/s"}],
-//     qid: 10991431029479106376,
-//     did: '8dd09c47c7bc90c9fd7274f0ad2c581e',
-//     q: '刘德华',
-//     t: 1629773746698
-// });
-
-// console.log('压缩前的字符串', content, '其长度:', content.length);
-
-// const res = huffmanEncode(content);
-// console.log('压缩后的字符串长度', res.result.length);
-// console.log('压缩后的字符串', res.result);
-
-// const out = huffmanDecode(res.codes, res.result);
-// console.log('解压后的字符串', out, '其长度:', out.length);
-// console.log('解压后的数据', JSON.stringify(JSON.parse(out)));

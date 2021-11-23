@@ -42,8 +42,8 @@ export function init(conf: SpyHeadConf) {
         const errors = spyHead.winerrors;
         const historys = [];
         for (let i = 0; i < errors.length; i++) {
-            const stack = (errors[i].stack || '').split('\n')[0];
-            historys.push(`(${i })${stack || errors[i].msg}`);
+            const stack = (errors[i].info.stack || '').split('\n')[0];
+            historys.push(`(${i })${stack || errors[i].info.msg}`);
         }
         return historys.join(';;');
     }
@@ -76,19 +76,19 @@ export function init(conf: SpyHeadConf) {
         return false;
     }
 
-    if (isSend) {
+    if (selector) {
         setTimeout(function () {
-            const obj = {
-                group: whiteScreenError.group,
-                info: {
-                    msg: '',
-                    netTime: getNetTime(),
-                    hisErrors: getHisError(),
-                    deviceInfo: getDeviceInfo(),
-                },
-            } as ErrorHandlerData;
-
             if (isWhiteScreen()) {
+                const obj = {
+                    group: whiteScreenError.group,
+                    info: {
+                        msg: '',
+                        netTime: getNetTime(),
+                        hisErrors: getHisError(),
+                        deviceInfo: getDeviceInfo(),
+                    },
+                } as ErrorHandlerData;
+
                 obj.info.msg = 'WhiteScren Error';
 
                 let allow: boolean | undefined | void = true;
@@ -97,7 +97,7 @@ export function init(conf: SpyHeadConf) {
                 }
 
                 if (allow !== false && obj.info.msg) {
-                    spyHead && spyHead.send(obj);
+                    spyHead && spyHead.send(obj, isSend);
                 }
             }
         }, timeout);

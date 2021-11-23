@@ -6,8 +6,9 @@ interface Option {
     key: string;
     maxRecordLen: number;
     interval: number;
-    onFlush: (res: any) => void;
-    onSave: (res: any) => void;
+    onFlush?: (res: any) => void;
+    onSave?: (res: any) => void;
+    onAdd?: (res: any) => boolean;
     storage: 'indexedDB' | 'localstorage' | 'empty';
 }
 
@@ -281,6 +282,9 @@ export default class SpyLocalCache {
             maxRecordLen: 30,
             onFlush: () => {},
             onSave: () => {},
+            onAdd: () => {
+                return true;
+            },
             storage: IndexedDB.isSupport()
                 ? 'indexedDB'
                 : LS.isSupport()
@@ -319,6 +323,12 @@ export default class SpyLocalCache {
     }
 
     addLog(info: any) {
+        if (this.option.onAdd) {
+            if (!this.option.onAdd(info)) {
+                return;
+            }
+        }
+
         info = JSON.stringify(info);
 
         this.tmpList.push(info as string);

@@ -27,7 +27,7 @@ import {
     ResOption,
     BigImgOption,
     HttpResOption,
-    SlowOption
+    SlowOption,
 } from './lib/interface';
 
 import FID from './module/fid';
@@ -70,6 +70,24 @@ export default class SpyClient extends SpyClientBasic {
         document.addEventListener('visibilitychange', this.visibilitychangeCB);
         window.addEventListener('beforeunload', this.leave, false);
         window.addEventListener('unload', this.leave, false);
+
+        this.handleHead();
+    }
+
+    handleHead() {
+        if (this.option.localCache) {
+            const spyHead = window.__spyHead;
+            if (spyHead && spyHead.winerrors) {
+                for (let index = 0; index < spyHead.winerrors.length; index++) {
+                    const obj = spyHead.winerrors[index];
+                    this.option.localCache.addLog(obj);
+                }
+                // Head发送的异常，也保存一份到本地，主要是JS错误和资源加载异常
+                spyHead.interceptor = (obj: any) => {
+                    this.option.localCache.addLog(obj);
+                };
+            }
+        }
     }
 
     listenFID(cb: FIDCB) {

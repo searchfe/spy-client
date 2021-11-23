@@ -58,10 +58,10 @@ export function init(conf: SpyHeadConf) {
 
                 // 历史错误
                 const historys = [];
-                for (let index = 0; index < spyHead.winerrors.length; index++) {
-                    const item = spyHead.winerrors[index];
-                    const prefix = item.count > 1 ? `(${item.count})` : '';
-                    historys.push(prefix + (item.msg as string));
+                for (let index = 0; index < winerrors.length; index++) {
+                    const item = winerrors[index];
+                    const prefix = item.info.count > 1 ? `(${item.info.count})` : '';
+                    historys.push(prefix + (item.info.msg as string));
                 }
 
                 info.hisErrors = historys.join('----');
@@ -71,8 +71,8 @@ export function init(conf: SpyHeadConf) {
                     allow = jsError.handler(obj);
                 }
 
-                if (allow !== false && isSendJserror) {
-                    spyHead.send(obj);
+                if (allow !== false) {
+                    spyHead.send(obj, isSendJserror);
                 }
             }
             // 资源错误
@@ -98,22 +98,12 @@ export function init(conf: SpyHeadConf) {
                     allow = resourceError.handler(obj);
                 }
 
-                if (allow !== false && isSendResource) {
-                    spyHead.send(obj);
+                if (allow !== false) {
+                    spyHead.send(obj, isSendResource);
                 }
 
                 resourceErrorCount++;
             }
-
-            // 有些错误一下出现很多次，都聚合都一个错误，加上次数
-            if (winerrors.length > 0) {
-                const lastInfo = winerrors[winerrors.length - 1];
-                if (info.msg === lastInfo.msg) {
-                    lastInfo.count += (lastInfo.count || 0);
-                    return;
-                }
-            }
-            winerrors.push(info);
         }
         catch (e) {
             console.error(e);
@@ -122,7 +112,7 @@ export function init(conf: SpyHeadConf) {
     window.addEventListener('error', spyListenError, true);
     spyHead.errorDestroy = function () {
         window.removeEventListener('error', spyListenError, true);
-        spyHead.winerrors = null;
+        spyHead.winerrors = [];
     };
 }
 

@@ -24,6 +24,11 @@ export interface SpyClientOption {
      * 日志服务器，默认是webb服务器，尾部需要加?
      */
     logServer?: string;
+
+    /**
+     * 本地日志cache对象，是指独立的spy-local-cache模块实例
+     */
+    localCache?: any;
 }
 
 export class Module {

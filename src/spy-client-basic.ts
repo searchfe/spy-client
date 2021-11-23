@@ -10,12 +10,12 @@ interface Option {
     /**
      * 指标组，它的每个key就是指标名称（英文表示），在平台对应分组添加该指标名称便能实现自动统计
      */
-    info: object;
+    info: Record<string, unknown>;
 
     /**
      * 维度信息对象，它的每个字段就是一个维度名称（英文表示），在平台对应分组添加该维度名称便能实现自动统计
      */
-    dim?: object;
+    dim?: Record<string, unknown>;
 
     /**
      * 分组，默认：common
@@ -49,7 +49,7 @@ interface ErrorOption {
     /**
      * 维度信息对象，它的每个字段就是一个维度名称（英文表示），在平台对应分组添加该维度名称便能实现自动统计
      */
-    dim?: object;
+    dim?: Record<string, unknown>;
 
     /**
      * 分组，默认：common
@@ -119,6 +119,7 @@ export default class SpyClient {
             lid: option.lid,
             check: option.check !== false,
             sample: option.sample,
+            localCache: option.localCache,
             logServer: option.logServer || defaultLogServer,
         };
     }
@@ -131,9 +132,9 @@ export default class SpyClient {
             method: 'POST',
             credentials: 'include',
             headers: {
-        　　　　'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         });
     }
 
@@ -162,16 +163,6 @@ export default class SpyClient {
             return;
         }
 
-        // 当前api设置了抽样，
-        if (typeof logItem.sample === 'number') {
-            if (Math.random() > logItem.sample) {
-                return;
-            }
-        }
-        else if (typeof this.option.sample === 'number' && Math.random() > this.option.sample) { // 否则，用全局抽样
-            return;
-        }
-
         logItem = assign(
             {
                 pid: this.option.pid,
@@ -181,6 +172,20 @@ export default class SpyClient {
             },
             logItem
         );
+
+        if (this.option.localCache) {
+            this.option.localCache.addLog(logItem);
+        }
+
+        // 当前api设置了抽样，
+        if (typeof logItem.sample === 'number') {
+            if (Math.random() > logItem.sample) {
+                return;
+            }
+        }
+        else if (typeof this.option.sample === 'number' && Math.random() > this.option.sample) { // 否则，用全局抽样
+            return;
+        }
 
         delete logItem.sample;
         return logItem;

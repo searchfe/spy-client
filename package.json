@@ -15,8 +15,8 @@
     "lint": "eslint src/**/*.ts",
     "example": "npm run dev && echo 'open url http://localhost:8000/example' && python -m SimpleHTTPServer 8000 ",
     "test": "karma start karma.conf.js",
-    "release_pre": "npm version patch",
-    "release": "rm -fr dist && npm run build && npm run lint && npm run test && npm publish",
+    "release_pre": "rm -fr dist && npm run build && npm run lint && npm run test",
+    "release": "npm version patch && npm publish",
     "release_post": "git push origin master && git push origin --tags"
   },
   "directories": {

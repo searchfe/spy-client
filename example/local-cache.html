@@ -9,11 +9,11 @@
         // 配置
         window.__spyHead && window.__spyHead.init({
             pid: '1_1000',
-            lid: '',
+            lid: 'xx',
             // 数据类型：异常，触发时间：OnLoadResourceError
             resourceError: {
                 group: 'resource',
-                sample: 1,
+                sample: 0.1,
                 handler: function (data) {
 
                 }
@@ -28,7 +28,7 @@
             },
             // 数据类型：异常，触发时间：OnJudgeReturnFalseWhenTimeout
             whiteScreenError: {
-                sample: 1,
+                sample: 0.1,
                 group: 'whiteScreen',
                 selector: 'body',
                 subSelector: 'button1',
@@ -38,15 +38,6 @@
                 }
             }
         });
-
-
-    function en(c){
-        var x='charCodeAt',
-        b, e={},
-        f=c.split(""),d=[],a=f[0],g=256;for(b=1;b<f.length;b++)c=f[b],null!=e[a+c]?a+=c:(d.push(1<a.length?e[a]:a[x](0)),e[a+c]=g,g++,a=c);d.push(1<a.length?e[a]:a[x](0));for(b=0;b<d.length;b++)d[b]=String.fromCharCode(d[b]);return d.join("")}
-
-    function de(b){var a,e={},d=b.split(""),c=f=d[0],g=[c],h=o=256;for(b=1;b<d.length;b++)a=d[b].charCodeAt(0),a=h>a?d[b]:e[a]?e[a]:f+c,g.push(a),c=a.charAt(0),e[o]=f+c,o++,f=a;return g.join("")}
-
     </script>
 </head>
 <body>
@@ -60,18 +51,89 @@
 
     </div>
     <script src="https://mss0.bdstatic.com/se/static/js/iphone/zbios/zbiosT_f69.js"></script>
+    <script src="/dist/spy-client.js"></script>
     <script src="/dist/spy-local-cache.js"></script>
 
 <script type="text/javascript">
 const localCache = new SpyLocalCache({
     storage: 'localstorage',
-    // compress: 'huffman',
-    // compress: 'no',
-    compress: 'lzw',
+    maxRecordLen: 300,
+    compress: 'no',
+    onAdd(log) {
+        // 仅保存性能异常
+        console.log('onAdd',  log && log.type && (log.type === 'perf' || log.type === 'except'));
+        return log && log.type && (log.type === 'perf' || log.type === 'except');
+    },
     onFlush(list) {
         console.log('flushed list', list);
-    },
+
+        if (list.length) {
+            // 将回捞的日志上报的spy，记住在spy平台配置 对应group
+            spy.sendPost({
+                pid: '1_1000',
+                type: 'except',
+                group: 'localCache',
+                ts: Date.now(),
+                lid: 'xxxx',
+                info: {
+                    msg: 'localcache',
+                    pageUrl: location.href,
+                    log: JSON.stringify(list)
+                }
+            });
+        }
+    }
 });
+
+
+const spy = new SpyClient({
+    pid: '1_1000',
+    lid: 'xxxx',
+    localCache: localCache
+});
+// 采用spy-client sdk内置的抽样配置，则此异常日志不管是否命中抽样，都会存在本地，同时若命中抽样，则日志发送给服务端
+// 那么所有spy sdk发送的日志会存到localstorage
+spy.sendExcept({
+    info: {
+        msg: 'xxxx is not undefined'
+    }
+});
+
+
+// 若自行做了抽样，那么此时则需要主动将此异常或性能日志存在本地，才能百分百保存异常信息到本地
+localCache.addLog({
+    type: 'except',
+    ts: Date.now(),
+    lid: 'xxx',
+    info: {
+        msg: 'module "jquery" miss',
+        pageUrl: location.href,
+    }
+});
+if (Math.random() < 0.1) {
+    spy.sendExcept({
+        info: {
+            msg: 'module "jquery" miss',
+            pageUrl: location.href,
+        }
+    });
+}
+
+
+spy.sendPerf({
+    // 可选, 分组，默认common，用户自定义
+    group: 'test',
+    // 必须, 指标信息，每个字段为一个指标，由用户自定义
+    info: {
+        fisrtScreen: 200, // 需要你自行计算好时间再发送，不能带单位
+    },
+    // 可选，维度信息，每个字段为一个维度，由用户自定义
+    dim: {
+        os: 'ios',
+        netType: 'wifi'
+    }
+});
+
 
 // 当有22条如下日志时
 // lzw 压缩率 68%，耗时 2ms
