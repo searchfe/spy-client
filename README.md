@@ -18,13 +18,13 @@ CDN方式
 
 ```html
 <!--增强版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.3/dist/spy-client.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.4/dist/spy-client.min.js" type="text/javascript"></script>
 
 <!--增强版SDK spy-head-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.3/dist/spy-head.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.4/dist/spy-head.min.js" type="text/javascript"></script>
 
 <!--基础版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.3/dist/spy-client-basic.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.1.4/dist/spy-client-basic.min.js" type="text/javascript"></script>
 
 ```
 
