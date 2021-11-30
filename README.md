@@ -887,6 +887,9 @@ npm run dev
 
 # 发布npm包
 npm run release_pre
+
+git add . && git commit -m "xx"
+
 npm run release
 
 # 修改文档等，把代码push

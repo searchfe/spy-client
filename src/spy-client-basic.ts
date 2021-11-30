@@ -10,12 +10,12 @@ interface Option {
     /**
      * 指标组，它的每个key就是指标名称（英文表示），在平台对应分组添加该指标名称便能实现自动统计
      */
-    info: Record<string, unknown>;
+    info: object;
 
     /**
      * 维度信息对象，它的每个字段就是一个维度名称（英文表示），在平台对应分组添加该维度名称便能实现自动统计
      */
-    dim?: Record<string, unknown>;
+    dim?: object;
 
     /**
      * 分组，默认：common
@@ -49,7 +49,7 @@ interface ErrorOption {
     /**
      * 维度信息对象，它的每个字段就是一个维度名称（英文表示），在平台对应分组添加该维度名称便能实现自动统计
      */
-    dim?: Record<string, unknown>;
+    dim?: object;
 
     /**
      * 分组，默认：common
