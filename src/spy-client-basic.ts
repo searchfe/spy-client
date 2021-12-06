@@ -124,40 +124,6 @@ export default class SpyClient {
         };
     }
 
-    fetch(url: string, data: any) {
-        if (!window.fetch) {
-            return;
-        }
-        fetch(url, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-    }
-
-    sendPost(data: any) {
-        let logItems: any[] = isArray(data) ? data : [data];
-        const first = logItems[0];
-        // 需要在页面暴漏出来pid等基本信息，方式调试查看基本信息与兼容目前的监控
-        const query = {
-            pid: first.pid,
-            type: first.type,
-            group: first.group,
-        };
-        const url = this.option.logServer + stringify(query);
-
-        if (!(
-            !isLtIos14
-            && navigator.sendBeacon
-            && navigator.sendBeacon(url, JSON.stringify(data))
-        )) {
-            this.fetch(url, data);
-        }
-    }
-
     handle(logItem: any) {
         if (!this.check(logItem)) {
             return;
@@ -209,19 +175,7 @@ export default class SpyClient {
             }
 
             const url = this.option.logServer + stringify(logItem);
-
-            // 目前服务器端支持sendBeacon的post请求，可以优先采用，该api可以降低打点丢失率
-            // 但是ios有些问题：在webkit浏览内核环境下，beacon requests的请求方式存在证书验证的bug，发送失败但返回正确.
-            // 修复说明在如下链接中：https://bugs.webkit.org/show_bug.cgi?id=193508
-            // 但是目前为止，在iOS12.2版本中该问题依旧存在
-            // 2021-11-11： 发现ios 14可以送，故小于14的不发送
-            if (!(
-                !isLtIos14
-                && navigator.sendBeacon
-                && navigator.sendBeacon(url)
-            )) {
-                (new Image()).src = url;
-            }
+            this.request(url);
         }
         if (post) {
             this.sendPost(postData);
@@ -383,5 +337,51 @@ export default class SpyClient {
 
     clearAllMark() {
         this.markCache = {};
+    }
+
+    // send(data, true) 也能以post发送，但是会有严格校验
+    // sendPost能以post发送，但没有校验
+    sendPost(data: any) {
+        let logItems: any[] = isArray(data) ? data : [data];
+        const first = logItems[0];
+        // 需要在页面暴漏出来pid等基本信息，方式调试查看基本信息与兼容目前的监控
+        const query = {
+            pid: first.pid,
+            type: first.type,
+            group: first.group,
+        };
+        const url = this.option.logServer + stringify(query);
+
+        this.request(url, data);
+    }
+
+    // 有data时，意味着要用post发送请求
+    protected request(url: string, data?: any) {
+        if (!(
+            !isLtIos14
+            && navigator.sendBeacon
+            && navigator.sendBeacon(url, data ? JSON.stringify(data) : undefined)
+        )) {
+            if (data) {
+                this.fetch(url, data);
+            }
+            else {
+                (new Image()).src = url;
+            }
+        }
+    }
+
+    protected fetch(url: string, data: any) {
+        if (!window.fetch) {
+            return;
+        }
+        fetch(url, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
     }
 }
