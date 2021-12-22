@@ -885,13 +885,16 @@ npm run build
 # development编译，产出到dist
 npm run dev
 
-# 发布npm包
+# 发布
+# 1. 构建测试
 npm run release_pre
-
-git add . && git commit -m "xx"
-
+# 2. 提交代码
+git add . && git commit -m "升级/Fix"
+# 3. 发布npm包，增加tag
 npm run release
 
-# 修改文档等，把代码push
+# 4. 修改Readme文档里版本号
+git add . && git commit -m "修改文档版本"
+# 5. 把代码push到远程
 npm run release_post
 ```
