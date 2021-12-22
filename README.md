@@ -3,10 +3,12 @@
 ## 介绍
 日志采集模块，提供一系列方便的api供使用
 
-## 安装
+1. 新版2.x部分API不再兼容1.x
+2. 从2.1.0版本开始，不再兼容IE8及以下IE浏览器
+3. 从2.1.8版本开始，兼容小程序环境（new Image类发送）；通过继承类，覆盖request方法，可以支持Node.js/跨端框架/小程序环境
 
-新版2.x部分API不再兼容1.x
-从2.1.0版本开始，不再兼容IE8及以下IE浏览器
+
+## 安装
 
 ```
 npm install spy-client --save
@@ -180,6 +182,42 @@ spy.clearAllMark(); // 清除所有mark的信息
 
 ```
 
+基础版可支持小程序/Node.js/跨端框架环境
+
+1 . 小程序
+不用做任何修改，就支持采用new Image发送日志。
+
+2 . Node.js/跨端框架环境
+
+Node.js，跨端框架，以及小程序环境中若采用`spy.send(xxx, true)`方式，则需要继承SpyClient类，覆盖request方法.
+如果是Node.js，需要服务器有外网权限
+
+```javascript
+const SpyClient = require('spy-client/dist/spy-client-basic');
+// 若环境编译不支持umd，则可以导入es module
+// const SpyClient = require('spy-client/dist/spy-client-basic.esm');
+
+class SpyClientNode from SpyClient {
+    request(url: string, data?: any) {
+        axios({
+            method: data ? 'post' : 'get',
+            url,
+            data: data ? JSON.stringify(data) : data,
+        });
+    }
+}
+
+const spy = new SpyClientNode({
+    pid: '1_1000', // 必须
+    lid: '', // 可选，页面的logid
+    sample: 1 // 可选，默认为1, 全局抽样，取值：[0-1], 所有发送接口都受到该抽样，单个发送接口的sample配置会覆盖该抽样。
+});
+spy.sendPerf({
+    info: {
+        responseTime: 200
+    }
+});
+```
 
 ## 增强版SDK
 
@@ -193,6 +231,8 @@ spy.clearAllMark(); // 清除所有mark的信息
     * 性能指标采集：包含体积、卡顿、速度等60+个性能指标采集方法
     * 异常：包含大于150K的大图片采集、HTTPS环境下HTTP资源采集
     * 辅助方式： mark系列辅助方法
+
+> 增强版SDK仅支持浏览器环境
 
 ### spy-head使用
 
