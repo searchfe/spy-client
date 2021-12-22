@@ -68,8 +68,8 @@ interface ErrorOption {
 }
 
 const defaultLogServer = 'https://sp1.baidu.com/5b1ZeDe5KgQFm2e88IuM_a/mwb2.gif?';
-
-const ver = navigator.userAgent.toLowerCase().match(/cpu iphone os (.*?)_/);
+// 基础版本兼容非浏览器环境
+const ver = navigator && navigator.userAgent ? navigator.userAgent.toLowerCase().match(/cpu iphone os (.*?)_/) : '';
 const isLtIos14 = ver && ver[2] && (+ver[2] < 14);
 
 
@@ -359,6 +359,7 @@ export default class SpyClient {
     protected request(url: string, data?: any) {
         if (!(
             !isLtIos14
+            && navigator
             && navigator.sendBeacon
             && navigator.sendBeacon(url, data ? JSON.stringify(data) : undefined)
         )) {
@@ -372,7 +373,8 @@ export default class SpyClient {
     }
 
     protected fetch(url: string, data: any) {
-        if (!window.fetch) {
+        if (!fetch) {
+            err('Global fetch method doesn\'t exist');
             return;
         }
         fetch(url, {
