@@ -80,7 +80,7 @@ export function init(conf: SpyHeadConf) {
                 obj.group = resourceError.group;
                 (obj.dim as any).type = (srcElement as HTMLElement).tagName.toLowerCase();
 
-                const url = (srcElement as HTMLScriptElement).src || (srcElement as HTMLLinkElement).href;
+                const url = (srcElement as HTMLScriptElement).src || (srcElement as HTMLLinkElement).href || '';
                 info.msg = url || 'unknown load eror';
 
                 (obj.dim as any).host = getUrlInfo(url).host;

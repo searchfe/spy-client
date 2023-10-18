@@ -27,15 +27,20 @@ export interface URLINFO {
 };
 
 function getUrlInfoFromURL(url: string): URLINFO | undefined {
-    if (URL) {
-        const obj = new URL(url);
-        if (obj.host !== undefined) {
-            return {
-                protocol: obj.protocol,
-                host: obj.host,
-                pathname: obj.pathname,
-                ext: '',
-            };
+    if (URL && url) {
+        try {
+            const obj = new URL(url);
+            if (obj.host !== undefined) {
+                return {
+                    protocol: obj.protocol,
+                    host: obj.host,
+                    pathname: obj.pathname,
+                    ext: '',
+                };
+            }
+        }
+        catch (e) {
+            console.error(e);
         }
     }
     return;
