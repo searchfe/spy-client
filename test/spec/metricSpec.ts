@@ -23,7 +23,7 @@ describe('metric', async () => {
     document.body.prepend(p);
 
     const img3 = document.createElement('img');
-    img3.src = 'https://expertimg.cdn.bcebos.com/expertcms/med/zhongyao.jpg';
+    img3.src = 'https://app-center.cdn.bcebos.com/appcenter/sts/pcfile/5944066977/2507de0a4ceaa97eedbc0421776a69a7.png';
     document.body.appendChild(img3);
 
     // 模拟T7内核特有的两个指标
@@ -140,7 +140,7 @@ describe('metric', async () => {
             });
             spy.listenBigImg(metric => {
                 console.log('listenBigImg', metric)
-                expect(metric.msg === 'https://expertimg.cdn.bcebos.com/expertcms/med/zhongyao.jpg').toBe(true);
+                expect(metric.msg === 'https://app-center.cdn.bcebos.com/appcenter/sts/pcfile/5944066977/2507de0a4ceaa97eedbc0421776a69a7.png').toBe(true);
                 expect(metric.xpath.includes('<')).toBe(true);
 
                 resolve('');
