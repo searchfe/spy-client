@@ -81,6 +81,11 @@ export function init(conf: SpyHeadConf) {
                 (obj.dim as any).type = (srcElement as HTMLElement).tagName.toLowerCase();
 
                 const url = (srcElement as HTMLScriptElement).src || (srcElement as HTMLLinkElement).href || '';
+                // 日志本身失败，要忽略
+                if (url.indexOf('/mwb2.gif?') > -1) {
+                    return;
+                }
+
                 info.msg = url || 'unknown load eror';
 
                 (obj.dim as any).host = getUrlInfo(url).host;

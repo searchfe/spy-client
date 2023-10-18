@@ -23,3 +23,5 @@ karma.conf.ts
 
 rollup.config.js
 .eslint*
+coverage
+src
