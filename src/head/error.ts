@@ -41,8 +41,10 @@ export function init(conf: SpyHeadConf) {
                 obj.group = jsError.group;
 
                 // 异常信息
-                const error = event.error || {};
-                info.msg = event.message;
+                // promise错误从reason取
+                const error = (event.error || (event as PromiseRejectionEvent).reason) || {};
+                // promise错误从error.message取
+                info.msg = event.message || error.message || '';
                 info.file = event.filename;
                 info.ln = event.lineno;
                 info.col = event.colno;
@@ -115,8 +117,13 @@ export function init(conf: SpyHeadConf) {
         }
     }
     window.addEventListener('error', spyListenError, true);
+
+    // Promise未处理拒绝监控
+    window.addEventListener('unhandledrejection', spyListenError, true);
+
     spyHead.errorDestroy = function () {
         window.removeEventListener('error', spyListenError, true);
+        window.removeEventListener('unhandledrejection', spyListenError, true);
         spyHead.winerrors = [];
     };
 }

@@ -10,7 +10,7 @@ describe('metric', async () => {
     let spy: SpyClient;
 
     const img1 = document.createElement('img');
-    img1.src = 'https://t7.baidu.com/it/u=1211001202,1148572269&fm=193&app=53&size=w414&n=0&g=0n&f=jpeg?sec=1594890084&t=cde9e5bcd0b06de0c989741a7853bd06';
+    img1.src = 'https://dss3.bdstatic.com/iPoZeXSm1A5BphGlnYG/skin/62.jpg';
     document.body.appendChild(img1);
 
     const button = document.createElement('button');
