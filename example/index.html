@@ -329,6 +329,10 @@ window.onload = function () {
         document.dispatchEvent(new Event('visibilitychange'));
 
     }, 2000);
+
+    new Promise((resolve, reject) => {
+        reject(new Error('Something went wrong in Promise!'));
+    });
 };
 </script>
 </body>
