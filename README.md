@@ -877,7 +877,7 @@ export interface NavigatorInfoMetric {
 ```
 git clone https://github.com/kaivean/spy-client.git
 
-cd spy-log
+cd spy-client
 npm install
 ```
 

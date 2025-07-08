@@ -28,4 +28,6 @@ if (window.__spyclientConf) {
     spyHead.init(window.__spyclientConf);
 }
 
+window.__spyHead = window.__spyHead || spyHead;
+
 export default spyHead;
