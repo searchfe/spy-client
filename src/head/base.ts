@@ -5,6 +5,7 @@
 
 import {
     SpyHeadConf,
+    SpyHeadUpdateConf
 } from '../lib/spyHeadInterface';
 
 interface SendObj {
@@ -25,6 +26,9 @@ export default {
     entryMap: {} as any,
     init(conf: SpyHeadConf) {
         this.conf = conf;
+    },
+    update(conf: SpyHeadUpdateConf) {
+        this.conf = Object.assign(this.conf, conf || {});
     },
     addError(obj: SendObj) {
         // 有些错误一下出现很多次，都聚合都一个错误，加上次数

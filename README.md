@@ -871,6 +871,9 @@ export interface NavigatorInfoMetric {
 
 ## 自定义构建
 
+#### node版本
+node版本 = 16
+
 #### clone准备
 如果觉得spy-client太大，只想要部分模块，比如禁用 longtask，可以拉取源码，自行编译
 

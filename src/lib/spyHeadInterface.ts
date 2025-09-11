@@ -38,3 +38,15 @@ export interface SpyHeadConf {
     resourceError: ErrorConf;
     whiteScreenError: WhiteScreenErrorConf;
 }
+
+export interface SpyHeadUpdateConf {
+    // spy平台申请的pid
+    pid?: string;
+    // 可选，用户log id
+    lid?: string;
+    // 可选，自定义日志服务器
+    logServer?: string;
+    jsError?: ErrorConf;
+    resourceError?: ErrorConf;
+    whiteScreenError?: WhiteScreenErrorConf;
+}

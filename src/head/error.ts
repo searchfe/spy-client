@@ -29,12 +29,12 @@ export function init(conf: SpyHeadConf) {
             const srcElement = event.srcElement as (HTMLElement | Window);
 
             // 设备信息
-            const dataConnection = navigator.connection || {};
-            info.downlink = dataConnection.downlink; // 网站下载速度 M/s
-            info.effectiveType = dataConnection.effectiveType; // 网络类型
-            info.rtt = dataConnection.rtt; // 网络往返时间 ms
-            info.deviceMemory = navigator.deviceMemory || 0;
-            info.hardwareConcurrency = navigator.hardwareConcurrency || 0;
+            // const dataConnection = navigator.connection || {};
+            // info.downlink = dataConnection.downlink; // 网站下载速度 M/s
+            // info.effectiveType = dataConnection.effectiveType; // 网络类型
+            // info.rtt = dataConnection.rtt; // 网络往返时间 ms
+            // info.deviceMemory = navigator.deviceMemory || 0;
+            // info.hardwareConcurrency = navigator.hardwareConcurrency || 0;
 
             // JS错误
             if (srcElement === window) {

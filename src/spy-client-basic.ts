@@ -31,6 +31,11 @@ interface Option {
      * 日志服务器，默认是webb服务器，尾部需要加?
      */
     logServer?: string;
+
+    /**
+     * log ID
+     */
+    lid?: string;
 }
 
 interface ErrorInfo {
@@ -60,6 +65,11 @@ interface ErrorOption {
      * 抽样，默认是 1，取值从[0, 1]，该抽样会覆盖实例初始化时的抽样配置
      */
     sample?: number;
+
+    /**
+     * log ID
+     */
+    lid?: string;
 
     /**
      * 业务拓展信息
@@ -339,8 +349,12 @@ export default class SpyClient {
         this.markCache = {};
     }
 
-    // send(data, true) 也能以post发送，但是会有严格校验
-    // sendPost能以post发送，但没有校验
+    /**
+     * sendPost能以post请求发送，可以承接多个日志项，上报内容size可以提升，但没有前端校验
+     * send(data, true) 也能以post请求发送，但是会有严格校验
+     * 要求：发送的多条日志必须是同一个pid，同一类型type，同一分组group
+     * @param data 日志项或者日志项数组
+     */
     sendPost(data: any) {
         let logItems: any[] = isArray(data) ? data : [data];
         const first = logItems[0];
