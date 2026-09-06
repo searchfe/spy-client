@@ -1,22 +1,23 @@
 {
   "name": "spy-client",
-  "version": "2.1.15",
+  "version": "2.2.0",
   "description": "spy client",
   "main": "dist/spy-client.js",
   "module": "dist/spy-client.esm.js",
   "typings": "dist/spy-client.d.ts",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "w_dev": "rm -fr dist && NODE_ENV=development webpack --config webpack.dev.config.ts",
-    "w_watch": "rm -fr dist && NODE_ENV=development webpack -w --config webpack.dev.config.ts",
-    "w_build": "rm -fr dist && NODE_ENV=production webpack --config webpack.prod.config.ts",
-    "dev": "rollup -c --environment NODE_ENV:development",
-    "watch": "NODE_OPTIONS='--max-old-space-size=4096' rollup -cw --environment NODE_ENV:development",
-    "build": "rollup -c --environment NODE_ENV:production",
-    "lint": "eslint src/**/*.ts",
-    "example": "npm run dev && echo 'open url http://localhost:8000/example' && python -m SimpleHTTPServer 8000 ",
-    "test": "karma start karma.conf.js",
-    "release_pre": "rm -fr dist && npm run build && npm run lint && npm run test",
-    "release": "npm version patch && npm publish --registry=https://registry.npmjs.org",
+    "dev": "rollup -c",
+    "watch": "NODE_OPTIONS='--max-old-space-size=4096' rollup -cw",
+    "build": "rm -fr dist && rollup -c && tsc -p tsconfig.json --declaration --emitDeclarationOnly --declarationDir dist",
+    "lint": "oxlint src",
+    "example": "pnpm run dev && echo 'open url http://localhost:8000/example' && python3 -m http.server 8000",
+    "test": "playwright test",
+    "release_pre": "pnpm run build && pnpm run lint && pnpm run test",
+    "release": "pnpm version patch && pnpm publish --registry=https://registry.npmjs.org",
     "release_post": "git push origin master && git push origin --tags"
   },
   "directories": {
@@ -25,55 +26,6 @@
   },
   "dependencies": {
     "core-js": "^3.6.4"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.15.0",
-    "@babel/eslint-parser": "^7.15.0",
-    "@babel/eslint-plugin": "^7.14.5",
-    "@babel/preset-env": "^7.5.5",
-    "@ecomfe/eslint-config": "^7.2.1",
-    "@rollup/plugin-commonjs": "^11.0.2",
-    "@rollup/plugin-node-resolve": "^7.1.1",
-    "@rollup/plugin-typescript": "^8.2.5",
-    "@types/glob": "^7.1.1",
-    "@types/jasmine": "^3.5.10",
-    "@types/node": "^12.6.8",
-    "@types/uglifyjs-webpack-plugin": "^1.1.0",
-    "@types/webpack": "^4.4.35",
-    "@types/webpack-merge": "^4.1.5",
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.0.6",
-    "cache-loader": "^4.1.0",
-    "css-loader": "^3.1.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-babel": "^5.3.0",
-    "eslint-plugin-import": "^2.24.1",
-    "fastify": "^3.21.0",
-    "fastify-cors": "^6.0.2",
-    "fecs": "^1.6.4",
-    "file-loader": "^4.1.0",
-    "jasmine-core": "^3.4.0",
-    "karma": "^6.3.4",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-jasmine": "^2.0.1",
-    "karma-jasmine-html-reporter": "^1.4.2",
-    "karma-typescript": "^5.5.2",
-    "less": "^3.9.0",
-    "less-loader": "^5.0.0",
-    "rollup": "^2.56.2",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-typescript2": "^0.30.0",
-    "rollup-plugin-uglify": "^6.0.4",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^3.0.2",
-    "ts-loader": "^6.0.4",
-    "ts-node": "^8.3.0",
-    "typescript": "^4.3.5",
-    "uglifyjs-webpack-plugin": "^2.1.3",
-    "url-loader": "^2.1.0"
   },
   "keywords": [
     "spy",
@@ -99,22 +51,23 @@
   },
   "author": "kaivean",
   "license": "ISC",
-  "babel": {
-    "comments": false,
-    "presets": [],
-    "env": {
-      "test": {
-        "plugins": [
-          "istanbul"
-        ]
-      }
-    }
-  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "ie >= 9",
     "android >= 4",
     "ios >= 9"
-  ]
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^26.4.1",
+    "oxlint": "^1.81.0",
+    "rollup": "^4.63.1",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3"
+  }
 }

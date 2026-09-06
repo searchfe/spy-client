@@ -7,7 +7,6 @@ interface Window {
     __spyHead: any;
     __spyclientConf: any;
     PerformanceObserver: any;
-    requestIdleCallback?: (callback: () => void, options?: any) => void;
 }
 
 interface Event {
@@ -52,42 +51,13 @@ interface PerformanceTiming {
     domFirstScreenPaint?: number;
 }
 
-type PerformanceObserverType =
-  | 'first-input'
-  | 'largest-contentful-paint'
-  | 'layout-shift'
-  | 'longtask'
-  | 'measure'
-  | 'navigation'
-  | 'paint'
-  | 'resource';
-
-
-type PerformanceEntryInitiatorType =
-  | 'beacon'
-  | 'css'
-  | 'fetch'
-  | 'img'
-  | 'other'
-  | 'script'
-  | 'xmlhttprequest';
-
-
+// 这些属性在 lib.dom 里分散在 PerformanceElementTiming/PerformanceLayoutShift 等子接口上，
+// 而业务里是通过 PerformanceObserver 拿到的基础 PerformanceEntry 来访问，这里统一补充为可选。
+// 注意：必须可选，否则会与 PerformanceResourceTiming 等内置子接口冲突（TS2430）。
 interface PerformanceEntry {
-    decodedBodySize?: number;
-    // duration: number;
-    // entryType: PerformanceObserverType;
-    initiatorType?: PerformanceEntryInitiatorType;
-    loadTime: number;
-    // name: string;
-    renderTime: number;
-    // startTime: number;
-    // hadRecentInput?: boolean;
+    loadTime?: number;
+    renderTime?: number;
     value?: number;
-    hadRecentInput: boolean;
-    attribution: Array<{containerSrc: string}>;
-}
-
-interface PerformanceObserver {
-    takeRecords: () => PerformanceEntryList;
+    hadRecentInput?: boolean;
+    attribution?: Array<{containerSrc: string}>;
 }

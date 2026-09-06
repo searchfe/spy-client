@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript"],
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "rules": {
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "no-unused-expressions": "off",
+    "no-underscore-dangle": "off",
+    "no-useless-escape": "off",
+    "no-shadow": "off",
+    "no-unused-vars": ["error", { "args": "none", "caughtErrors": "none" }]
+  },
+  "ignorePatterns": ["dist", "node_modules", "coverage", "output"]
+}

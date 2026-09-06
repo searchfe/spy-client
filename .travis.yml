@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - '12'
+  - '24'
 
 env:
   - TRAVIS=true
@@ -9,9 +9,12 @@ env:
 addons:
   chrome: stable
 
+before_install:
+  - "corepack enable"
+
 before_script:
-  - "npm install"
-  - "npm run build"
+  - "pnpm install"
+  - "pnpm build"
 
 script:
-  - "npm run test"
+  - "pnpm test"

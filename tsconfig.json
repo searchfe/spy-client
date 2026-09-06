@@ -1,18 +1,21 @@
-// 该配置用于 src 和 test目录的ts
+// 该配置用于 src 和 test目录的ts（类型检查；声明文件由 build 脚本单独产出）
 {
     "compilerOptions": {
-        // ts-node does not support any module syntax other than commonjs
-        // 生成代码的模块风格是commonjs 、ES6 or es2015、amd、umd、ESNext等风格
-        "module": "es2015",
+        // 生成代码的模块风格（rollup 打包需要 es module 语法）
+        "module": "ESNext",
+        "moduleResolution": "bundler",
 
-        // tsc编译输出的代码的es版本
-        "target": "ES5", // 生成的代码是 ES3 ES5 ES6 or ES2015 ES2016 ES2017 ESNEXT
+        // tsc编译输出的代码的es版本，保持 ES5 以兼容旧浏览器（TS7 将移除，先按 6.0 忽略弃用告警）
+        "target": "ES5",
+        "ignoreDeprecations": "6.0",
 
         "sourceMap": false,
         // "allowJs": true, // 不能和declaration一起使用
         "noImplicitReturns": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
+        // 回调等成员在 listenXxx/init 等方法里赋值，不满足“构造器内确定性赋值”，沿用旧行为关闭该检查
+        "strictPropertyInitialization": false,
         "noFallthroughCasesInSwitch": true,
 
         "allowUnreachableCode": false,
@@ -21,14 +24,9 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
 
-        "lib": ["es6", "ES5", "dom", "scripthost"],
+        "lib": ["es2017", "dom", "scripthost"],
 
-        "declaration": true, // 产出 *.d.ts，不能和allowJs一起使用
-        "declarationDir": "./dist",
-        "baseUrl": ".",
-        "paths": {
-
-        }
+        "rootDir": "src"
     },
     "compileOnSave": false,
     "include": [

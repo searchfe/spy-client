@@ -57,7 +57,7 @@ export default class LCP implements Module {
 
     private handle(entries: PerformanceEntryList) {
         entries.map(entry => {
-            this.value = entry.renderTime || entry.loadTime;
+            this.value = entry.renderTime || entry.loadTime || 0;
         });
     }
 }

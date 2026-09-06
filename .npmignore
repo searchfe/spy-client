@@ -14,14 +14,13 @@
 *.cmd
 ~*
 package-lock.json
+pnpm-lock.yaml
 tsconfig.json
 tsconfig.src.json
 tslint.json
 
-webpack.*.config.ts
-karma.conf.ts
-
-rollup.config.js
-.eslint*
+playwright.config.ts
+rollup.config.mjs
+.oxlintrc.json
 coverage
 src

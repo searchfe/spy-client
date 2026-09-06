@@ -158,7 +158,7 @@ function assign(...args: any[]) {
         }
         return t;
     };
-    return __assign.apply(this, args);
+    return (__assign as Function).apply(null, args);
 };
 
 function utf8Encode(text: string) {
@@ -398,7 +398,7 @@ export default class SpyLocalCache {
                 len = data.result.length;
             }
             catch (e) {
-                error = e;
+                error = e as Error;
                 console.error(e);
             }
 

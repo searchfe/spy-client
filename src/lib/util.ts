@@ -16,7 +16,7 @@ export function assign(...args: any[]) {
         }
         return t;
     };
-    return __assign.apply(this, args);
+    return (__assign as Function).apply(null, args);
 };
 
 export interface URLINFO {

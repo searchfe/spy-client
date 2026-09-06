@@ -81,7 +81,12 @@ Thumbs.db
 build-dep
 .cache-loader
 
+# playwright
+/test-results
+/playwright-report
+
 package-lock.json
+pnpm-lock.yaml
 
 spy-client.d.ts
 spy-client.mjs

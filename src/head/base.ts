@@ -24,6 +24,7 @@ export default {
     errorDestroy() {},
     observerDestroy() {},
     entryMap: {} as any,
+    interceptor: undefined as ((obj: SendObj) => void) | undefined,
     init(conf: SpyHeadConf) {
         this.conf = conf;
     },
