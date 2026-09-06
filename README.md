@@ -881,7 +881,7 @@ node版本 = 16
 git clone https://github.com/kaivean/spy-client.git
 
 cd spy-client
-npm install
+npm install --legacy-peer-deps
 ```
 
 #### 禁用模块
