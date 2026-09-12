@@ -7,11 +7,19 @@
 2. 从2.1.0版本开始，不再兼容IE8及以下IE浏览器
 3. 从2.1.8版本开始，兼容小程序环境（new Image类发送）；通过继承类，覆盖request方法，可以支持Node.js/跨端框架/小程序环境
 
+## 开发环境
+
+- Node.js `>=24`
+- pnpm `10.33.0`（项目通过 `packageManager` 字段声明）
+- 测试需要本机已安装 Google Chrome。Playwright 使用系统 Chrome，不会下载 Playwright 自带的浏览器。
+
+项目使用 Rollup 4 构建，并保留 ES5 兼容目标。`spy-client` 和 `spy-client-basic` 会生成 UMD、IIFE、ESM 和 `.mjs` 格式；`spy-head` 和 `spy-local-cache` 生成 UMD 格式。TypeScript 类型声明由构建脚本单独生成。
+
 
 ## 安装
 
 ```
-npm install spy-client --save
+pnpm add spy-client
 ```
 
 CDN方式
@@ -20,13 +28,13 @@ CDN方式
 
 ```html
 <!--增强版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.8/dist/spy-client.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.2.0/dist/spy-client.min.js" type="text/javascript"></script>
 
 <!--增强版SDK spy-head-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.8/dist/spy-head.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.2.0/dist/spy-head.min.js" type="text/javascript"></script>
 
 <!--基础版SDK-->
-<script src="https://code.bdstatic.com/npm/spy-client@2.1.8/dist/spy-client-basic.min.js" type="text/javascript"></script>
+<script src="https://code.bdstatic.com/npm/spy-client@2.2.0/dist/spy-client-basic.min.js" type="text/javascript"></script>
 
 ```
 
@@ -872,7 +880,7 @@ export interface NavigatorInfoMetric {
 ## 自定义构建
 
 #### node版本
-node版本 = 16
+Node.js版本 >= 24，包管理器使用 pnpm 10.33.0
 
 #### clone准备
 如果觉得spy-client太大，只想要部分模块，比如禁用 longtask，可以拉取源码，自行编译
@@ -881,7 +889,7 @@ node版本 = 16
 git clone https://github.com/kaivean/spy-client.git
 
 cd spy-client
-npm install --legacy-peer-deps
+pnpm install
 ```
 
 #### 禁用模块
@@ -901,7 +909,7 @@ npm install --legacy-peer-deps
 #### 构建
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 然后找到dist/spy-client.min.js 就是构建压缩版代码
@@ -911,33 +919,33 @@ npm run build
 
 ```bash
 # 启动本地调试页面，进行调试
-npm run example
+pnpm run example
 
 # 进行watch 编译， 一般和上个命令配合使用
-npm run watch
+pnpm run watch
 
-# lint
-npm run lint
+# 使用 oxlint 检查 src
+pnpm run lint
 
-# 测试
-npm run test
+# 使用系统 Chrome 运行 Playwright 测试
+pnpm run test
 
 # production编译，产出到dist
-npm run build
+pnpm run build
 
 # development编译，产出到dist
-npm run dev
+pnpm run dev
 
 # 发布
 # 1. 构建测试
-npm run release_pre
+pnpm run release_pre
 # 2. 提交代码
 git add . && git commit -m "升级/Fix"
 # 3. 发布npm包，增加tag
-npm run release
+pnpm run release
 
 # 4. 修改Readme文档里版本号
 git add . && git commit -m "修改文档版本"
 # 5. 把代码push到远程
-npm run release_post
+pnpm run release_post
 ```

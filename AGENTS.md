@@ -8,11 +8,13 @@ SDK 只负责采集、校验、采样和发送，不负责 Nginx 接入、统计
 
 ## 技术栈和兼容性
 
-- TypeScript、Rollup、Webpack 辅助构建。
-- Babel、TypeScript compiler、ESLint。
-- Karma + Jasmine 测试。
+- TypeScript 6、Rollup 4、TypeScript compiler。
+- oxlint 静态检查。
+- Playwright Test 端到端测试，使用本机 Chrome，不下载 Playwright 浏览器。
 - `core-js` 运行时依赖。
 - Performance、Long Task、LCP、FID、CLS、Resource Timing、Navigator 等浏览器 API。
+
+开发环境要求 Node.js `>=24`，包管理器使用 pnpm `10.33.0`。构建目标保持 ES5，发布包保留 UMD、IIFE、ESM 和 `.mjs` 多格式产物。
 
 基础版日志类型包括 `perf`、`except`、`dist`、`count`。增强版包含更多性能和异常采集模块并依赖浏览器能力；`spy-head` 负责全局 JS 错误、资源错误、白屏和部分早期性能观察。
 
@@ -40,42 +42,43 @@ spy-client/
 │   ├── head/                  # 错误、白屏、资源观察
 │   ├── lib/                   # 数据、压缩、工具和接口
 │   └── types/                 # 全局类型
-├── test/spec/                 # Karma/Jasmine 测试
+├── test/e2e/                  # Playwright Test 测试
 ├── example/                   # 本地示例和缓存示例
-├── rollup.config.js
-├── karma.conf.js
+├── rollup.config.mjs
+├── playwright.config.ts
+├── .oxlintrc.json
 ├── tsconfig.json
-├── .eslintrc.js
+├── pnpm-lock.yaml
 └── package.json
 ```
 
 ## 配置和产物
 
-构建产物全部位于 `dist/`。包括基础版、增强版、`spy-head` 和压缩文件
+构建产物全部位于 `dist/`，包括基础版、增强版、`spy-head`、`spy-local-cache` 及其压缩文件和声明文件。`spy-client`、`spy-client-basic` 额外生成 IIFE、ESM 和 `.mjs` 格式。
 
 ## 开发命令
 
 ```bash
-npm install
-npm run lint
-npm run test
-npm run build
-npm run dev
-npm run watch
-npm run example
+pnpm install
+pnpm run lint
+pnpm run test
+pnpm run build
+pnpm run dev
+pnpm run watch
+pnpm run example
 ```
 
-辅助脚本还包括 `w_dev`、`w_watch`、`w_build`。`build` 是生产 Rollup 构建；`test` 使用 Karma；`lint` 检查 TypeScript 源码；`example` 会启动开发构建和本地示例服务。
+`build` 是生产 Rollup 构建；`test` 使用 Playwright Test，并通过 `playwright.config.ts` 启动静态服务器和系统 Chrome；`lint` 使用 oxlint 检查 `src`；`example` 会启动开发构建和本地示例服务。
 
 发布命令必须单独确认：
 
 ```bash
-npm run release_pre
-npm run release
-npm run release_post
+pnpm run release_pre
+pnpm run release
+pnpm run release_post
 ```
 
-其中 `release_pre` 会清理并重新构建、lint、测试；`release` 会修改版本并发布 npm；`release_post` 会推送分支和 tag，不得在普通验证中执行。
+其中 `release_pre` 会重新构建、lint、测试；`release` 会修改版本并发布 npm；`release_post` 会推送分支和 tag，不得在普通验证中执行。
 
 ## 测试要求
 
@@ -120,10 +123,10 @@ npm run release_post
 
 ## 验证清单
 
-- [ ] `npm run lint`
-- [ ] `npm run test`
-- [ ] `npm run build`
+- [ ] `pnpm run lint`
+- [ ] `pnpm run test`
+- [ ] `pnpm run build`
 - [ ] 检查 `dist/` 入口和声明文件
 - [ ] 验证成功、采样为零、非法参数和 request 失败
 - [ ] 检查下游日志协议兼容
-- [ ] 不执行 npm 发布和远端推送
+- [ ] 不执行 npm/pnpm 发布和远端推送
